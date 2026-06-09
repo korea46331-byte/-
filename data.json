@@ -46,11 +46,11 @@
         {
           "rid": "r100",
           "task": "ㅇ",
-          "status": "badge-done",
+          "status": "badge-ing",
           "date": "",
           "owner": "-",
           "memo": "ㅇ",
-          "completed": true
+          "completed": false
         }
       ]
     },

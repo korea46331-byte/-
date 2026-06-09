@@ -17,13 +17,8 @@ body {
   color: white; padding: 18px 24px;
 }
 .header h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-.header p  { font-size: 12px; opacity: 0.75; }
 .meta { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .meta-item { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 5px 14px; font-size: 11px; }
-.meta-item span { font-weight: 700; font-size: 16px; display: block; }
-.meta-editable { border-radius: 4px; cursor: text; }
-.meta-editable:hover { background: rgba(255,255,255,0.15); outline: 1px dashed rgba(255,255,255,0.4); }
-.meta-editable[contenteditable="true"] { background: rgba(255,255,255,0.2); outline: 2px solid rgba(255,255,255,0.6); padding: 1px 4px; }
 
 /* ── TAB BAR ── */
 .tab-bar {
@@ -55,7 +50,30 @@ body {
 .btn-primary:hover { background: #2d5287; }
 .btn-add { background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; }
 .btn-add:hover { background: #dcfce7; }
-.save-status { font-size: 11px; color: #9ca3af; margin-left: auto; }
+.save-status { font-size: 11px; color: #9ca3af; margin-left: auto; font-weight: 600; }
+
+/* ── META DYNAMIC ── */
+.meta { align-items: flex-start; }
+.meta-item { position: relative; }
+.meta-val { font-weight: 700; font-size: 16px; display: block; cursor: text; border-radius: 4px; }
+.meta-lbl { font-size: 11px; cursor: text; border-radius: 4px; }
+.meta-val:hover, .meta-lbl:hover { background: rgba(255,255,255,0.15); outline: 1px dashed rgba(255,255,255,0.4); }
+.meta-val[contenteditable="true"], .meta-lbl[contenteditable="true"] { background: rgba(255,255,255,0.2); outline: 2px solid rgba(255,255,255,0.6); padding: 1px 4px; }
+.meta-del {
+  position: absolute; top: -5px; right: -5px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(239,68,68,0.8); color: white;
+  border: none; cursor: pointer; font-size: 10px; font-weight: 700;
+  display: none; align-items: center; justify-content: center; line-height: 1; padding: 0;
+}
+.meta-item:hover .meta-del { display: flex; }
+.meta-add-btn {
+  background: rgba(255,255,255,0.12); border: 1px dashed rgba(255,255,255,0.5);
+  border-radius: 8px; padding: 5px 12px; font-size: 20px; color: rgba(255,255,255,0.7);
+  cursor: pointer; line-height: 1; align-self: center;
+  transition: all 0.15s;
+}
+.meta-add-btn:hover { background: rgba(255,255,255,0.25); color: white; }
 
 /* ── TAB CONTENT ── */
 .tab-content { display: none; padding: 20px; }
@@ -121,8 +139,7 @@ body {
 .work-card .sub-table-wrap { overflow-x: auto; }
 .work-card-header {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px;
-  background: #1e3a5f; color: white;
+  padding: 12px 16px; color: white;
 }
 .work-card-header.color-blue   { background: #1e3a5f; }
 .work-card-header.color-green  { background: #1a4731; }
@@ -204,7 +221,6 @@ body {
   font-size: 10px; padding: 2px 6px; border-radius: 5px;
   border: none; cursor: pointer; font-weight: 600;
 }
-.btn-re   { display: none; }
 .btn-ok   { background: #dcfce7; color: #166534; }
 .btn-del  { background: #fee2e2; color: #991b1b; }
 .btn-undo { background: #f3f4f6; color: #6b7280; font-size: 10px; }
@@ -222,15 +238,6 @@ body {
   padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
 }
 
-/* ── ADD WORK CARD BUTTON ── */
-.add-card-btn {
-  border: 2px dashed #cbd5e1; border-radius: 12px;
-  padding: 14px; text-align: center;
-  color: #94a3b8; font-size: 13px; font-weight: 600;
-  cursor: pointer; background: white; display: none;
-  transition: all 0.15s;
-}
-.add-card-btn:hover { border-color: #1e3a5f; color: #1e3a5f; background: #f0f4ff; }
 .edit-mode-show { display: inline-flex; }
 
 /* ── MODAL ── */
@@ -277,14 +284,17 @@ body {
   .header h1 { font-size: 15px; }
   .meta { gap: 6px; margin-top: 8px; }
   .meta-item { padding: 4px 10px; font-size: 10px; }
-  .meta-item span { font-size: 13px; }
+  .meta-val { font-size: 13px; }
+  /* 터치: 삭제 버튼 항상 표시 */
+  .meta-del { display: flex; }
 
   .tab-bar { padding: 0 6px; }
   .tab-btn { padding: 10px 8px; font-size: 11px; }
 
   .toolbar { padding: 8px 10px; gap: 6px; flex-wrap: wrap; }
   .btn { padding: 6px 8px; font-size: 11px; }
-  .save-status { display: none; }
+  /* save-status를 툴바 전체 너비로 분리 */
+  .save-status { font-size: 10px; margin-left: 0; width: 100%; text-align: right; order: 10; }
 
   .action-box { padding: 10px; }
   .action-cards { grid-template-columns: 1fr; }
@@ -359,13 +369,29 @@ body {
 <body>
 
 <div class="header">
-  <h1><span class="editable meta-editable" title="더블클릭으로 수정">🔬 공정개발팀 업무 현황</span></h1>
-  <p><span class="editable meta-editable" title="더블클릭으로 수정">팀장 마스터 정리 | 더블클릭으로 수정 가능</span></p>
-  <div class="meta">
-    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">3건</span>진행과제</div>
-    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">3명</span>팀원</div>
-    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">PT · TL</span>배양운영</div>
-    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">30종</span>미세조류</div>
+  <h1><span class="editable header-title" title="더블클릭으로 수정">🔬 공정개발팀 업무 현황</span></h1>
+  <div class="meta" id="metaContainer">
+    <div class="meta-item" data-mid="m1">
+      <button class="meta-del" onclick="deleteMetaItem(this)" title="삭제">×</button>
+      <span class="meta-val editable">3건</span>
+      <span class="meta-lbl editable">진행과제</span>
+    </div>
+    <div class="meta-item" data-mid="m2">
+      <button class="meta-del" onclick="deleteMetaItem(this)" title="삭제">×</button>
+      <span class="meta-val editable">3명</span>
+      <span class="meta-lbl editable">팀원</span>
+    </div>
+    <div class="meta-item" data-mid="m3">
+      <button class="meta-del" onclick="deleteMetaItem(this)" title="삭제">×</button>
+      <span class="meta-val editable">PT · TL</span>
+      <span class="meta-lbl editable">배양운영</span>
+    </div>
+    <div class="meta-item" data-mid="m4">
+      <button class="meta-del" onclick="deleteMetaItem(this)" title="삭제">×</button>
+      <span class="meta-val editable">30종</span>
+      <span class="meta-lbl editable">미세조류</span>
+    </div>
+    <button class="meta-add-btn" onclick="addMetaItem()" title="항목 추가">+</button>
   </div>
 </div>
 
@@ -381,7 +407,7 @@ body {
   <button class="btn btn-add edit-mode-show" onclick="openAddCardModal()">+ 업무 추가</button>
   <button class="btn" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0" onclick="openColorModal()">🎨 색상 설정</button>
   <button class="btn" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0" onclick="openTokenModal()" id="tokenBtn">🔑 GitHub 연결</button>
-  <span class="save-status" id="saveStatus">더블클릭으로 내용 수정 | 배지 클릭으로 상태 변경</span>
+  <span class="save-status" id="saveStatus">—</span>
 </div>
 
 <!-- ══════════════ 전체 탭 ══════════════ -->
@@ -687,7 +713,31 @@ body {
 </div>
 
 <script>
-let editMode = false;
+let metaMidCounter = 10;
+
+/* ── META ITEM 빌더 ── */
+function buildMetaItem(mid, val, lbl) {
+  const div = document.createElement('div');
+  div.className = 'meta-item';
+  div.dataset.mid = mid;
+  div.innerHTML = `
+    <button class="meta-del" onclick="deleteMetaItem(this)" title="삭제">×</button>
+    <span class="meta-val editable">${val}</span>
+    <span class="meta-lbl editable">${lbl}</span>`;
+  return div;
+}
+function addMetaItem() {
+  const mc = document.getElementById('metaContainer');
+  const addBtn = mc.querySelector('.meta-add-btn');
+  const mid = 'm' + metaMidCounter++;
+  const div = buildMetaItem(mid, '—', '항목');
+  mc.insertBefore(div, addBtn);
+  autoSave();
+}
+function deleteMetaItem(btn) {
+  btn.closest('.meta-item').remove();
+  autoSave();
+}
 let currentEditRow = null;
 let ridCounter = 100;
 let widCounter = 20;
@@ -723,10 +773,8 @@ function reattachEvents(el) {
   el.querySelectorAll('.date-input').forEach(d => d.onchange = () => autoSave());
 }
 
-/* ── 더블클릭으로 editable 셀 수정 ── */
-document.addEventListener('dblclick', e => {
-  const el = e.target.closest('.editable');
-  if (!el) return;
+/* ── 더블클릭 / 더블탭으로 editable 셀 수정 ── */
+function activateEditable(el) {
   el.setAttribute('contenteditable', 'true');
   el.focus();
   const range = document.createRange();
@@ -735,7 +783,25 @@ document.addEventListener('dblclick', e => {
   const sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
+}
+document.addEventListener('dblclick', e => {
+  const el = e.target.closest('.editable');
+  if (el) activateEditable(el);
 });
+/* 모바일: 더블탭 감지 */
+let _lastTap = 0, _lastTapEl = null;
+document.addEventListener('touchend', e => {
+  const el = e.target.closest('.editable');
+  if (!el) return;
+  const now = Date.now();
+  if (_lastTapEl === el && now - _lastTap < 350) {
+    e.preventDefault();
+    activateEditable(el);
+    _lastTap = 0; _lastTapEl = null;
+  } else {
+    _lastTap = now; _lastTapEl = el;
+  }
+}, { passive: false });
 document.addEventListener('keydown', e => {
   const el = e.target;
   if (e.key === 'Enter' && el.classList && el.classList.contains('editable')) {
@@ -955,7 +1021,7 @@ function loadColors() {
 }
 function applyColorsToDom() {
   Object.entries(catColors).forEach(([cat, color]) => {
-    document.querySelectorAll(`.work-card-header.cat-${cat}`).forEach(el => {
+    document.querySelectorAll(`.work-card[data-cat="${cat}"] .work-card-header`).forEach(el => {
       el.style.background = color;
     });
   });
@@ -1021,9 +1087,13 @@ function collectData() {
       rows
     });
   });
-  const metaEls = document.querySelectorAll('.meta-editable');
-  const meta = Array.from(metaEls).map(el => el.textContent.trim());
-  return { cards, meta };
+  const title = document.querySelector('.header-title')?.textContent.trim() || '';
+  const metaItems = Array.from(document.querySelectorAll('#metaContainer .meta-item[data-mid]')).map(item => ({
+    val: item.querySelector('.meta-val')?.textContent.trim() || '',
+    lbl: item.querySelector('.meta-lbl')?.textContent.trim() || '',
+    mid: item.dataset.mid
+  }));
+  return { cards, title, metaItems };
 }
 
 /* ── GitHub SHA 가져오기 ── */
@@ -1077,13 +1147,10 @@ async function saveToGitHub(retryCount = 0) {
 
     if (result.content && result.content.sha) {
       dataSha = result.content.sha;
-      if (st) {
-        st.textContent = '☁️ 저장됨';
-        st.style.color = '#10b981';
-        setTimeout(() => { st.textContent = '더블클릭으로 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 2000);
-      }
+      const now = new Date();
+      const hhmm = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+      if (st) { st.textContent = `☁️ 저장됨 ${hhmm}`; st.style.color = '#10b981'; }
     } else if (retryCount < 2) {
-      // SHA 충돌 등 — 1회만 재시도
       dataSha = null;
       await new Promise(r => setTimeout(r, 500));
       await saveToGitHub(retryCount + 1);
@@ -1092,11 +1159,7 @@ async function saveToGitHub(retryCount = 0) {
     }
   } catch(e) {
     console.error('GitHub 저장 실패:', e);
-    if (st) {
-      st.textContent = '⚠️ 저장 실패 (콘솔 확인)';
-      st.style.color = '#ef4444';
-      setTimeout(() => { st.textContent = '더블클릭으로 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 3000);
-    }
+    if (st) { st.textContent = '⚠️ 저장 실패'; st.style.color = '#ef4444'; }
   }
 }
 
@@ -1140,9 +1203,18 @@ function loadFromLocalStorage() {
 /* ── 데이터로 화면 렌더링 ── */
 function renderData(data) {
   if (!data || !data.cards) return;
-  if (data.meta) {
-    const metaEls = document.querySelectorAll('.meta-editable');
-    data.meta.forEach((txt, i) => { if (metaEls[i]) metaEls[i].textContent = txt; });
+  if (data.title) {
+    const titleEl = document.querySelector('.header-title');
+    if (titleEl) titleEl.textContent = data.title;
+  }
+  if (data.metaItems) {
+    const mc = document.getElementById('metaContainer');
+    const addBtn = mc.querySelector('.meta-add-btn');
+    mc.querySelectorAll('.meta-item[data-mid]').forEach(el => el.remove());
+    data.metaItems.forEach(item => {
+      const div = buildMetaItem(item.mid, item.val, item.lbl);
+      mc.insertBefore(div, addBtn);
+    });
   }
   ['project','analysis','permit','etc'].forEach(cat => {
     const sg = document.getElementById('sg-' + cat);

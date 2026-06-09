@@ -89,15 +89,6 @@
       "colorCls": "color-purple",
       "rows": [
         {
-          "rid": "r7",
-          "task": "미세조류 30종 배양 운영",
-          "status": "badge-ing",
-          "date": "",
-          "owner": "황태희",
-          "memo": "-",
-          "completed": false
-        },
-        {
           "rid": "r8",
           "task": "바이오매스 확보 및 관리",
           "status": "badge-ing",

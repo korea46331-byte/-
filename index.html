@@ -611,32 +611,6 @@ body {
 <div class="tab-content" id="tab-permit"><div class="section-group" id="fv-permit"></div></div>
 <div class="tab-content" id="tab-etc"><div class="section-group" id="fv-etc"></div></div>
 
-<!-- 수정 모달 -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal">
-    <h3>✏️ 세부내용 수정</h3>
-    <div class="form-group"><label>세부내용</label><textarea id="em-task" rows="2"></textarea></div>
-    <div class="form-row">
-      <div class="form-group"><label>상태</label>
-        <select id="em-status">
-          <option value="badge-ing">진행중</option><option value="badge-plan">예정/협의중</option>
-          <option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option>
-          <option value="badge-done">완료</option><option value="badge-hold">보류</option>
-        </select>
-      </div>
-      <div class="form-group"><label>기한</label><input type="date" id="em-deadline"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>담당자</label><input id="em-owner" placeholder="이름"></div>
-      <div class="form-group"><label>메모</label><input id="em-memo" placeholder="메모"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeEditModal()">취소</button>
-      <button class="btn btn-primary" onclick="saveEditRow()">저장</button>
-    </div>
-  </div>
-</div>
-
 <!-- 색상 설정 모달 -->
 <div class="modal-overlay" id="colorModal">
   <div class="modal">
@@ -744,7 +718,6 @@ function deleteMetaItem(btn) {
   btn.closest('.meta-item').remove();
   autoSave();
 }
-let currentEditRow = null;
 let ridCounter = 100;
 let widCounter = 20;
 
@@ -772,8 +745,7 @@ function syncFilterTab(cat) {
 function reattachEvents(el) {
   el.querySelectorAll('.badge').forEach(b => b.onclick = () => cycleBadge(b));
   el.querySelectorAll('.work-card-badge').forEach(b => b.onclick = () => cycleCardBadge(b));
-  el.querySelectorAll('.btn-re').forEach(b => b.onclick = () => openEditRow(b));
-  el.querySelectorAll('.btn-ok').forEach(b => b.onclick = () => completeRow(b));
+el.querySelectorAll('.btn-ok').forEach(b => b.onclick = () => completeRow(b));
   el.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteRow(b));
   el.querySelectorAll('.btn-add-sub').forEach(b => b.onclick = () => addSubRow(b));
   el.querySelectorAll('.date-input').forEach(d => d.onchange = () => autoSave());
@@ -948,43 +920,6 @@ function addWorkCard() {
   autoSave();
 }
 
-/* ── EDIT ROW MODAL ── */
-function openEditRow(btn) {
-  currentEditRow = btn.closest('tr');
-  const taskEl  = currentEditRow.querySelector('.td-task');
-  const badge   = currentEditRow.querySelector('.badge');
-  const dateInp = currentEditRow.querySelector('.date-input');
-  const ownerEl = currentEditRow.querySelector('.td-owner');
-  const memoEl  = currentEditRow.querySelector('.td-memo');
-  document.getElementById('em-task').value    = taskEl ? taskEl.textContent.trim() : '';
-  const cur = badgeCycleArr.find(c => badge && badge.classList.contains(c)) || 'badge-ing';
-  document.getElementById('em-status').value  = cur;
-  document.getElementById('em-deadline').value = dateInp ? dateInp.value : '';
-  document.getElementById('em-owner').value   = ownerEl ? ownerEl.textContent.trim() : '';
-  document.getElementById('em-memo').value    = memoEl  ? memoEl.textContent.trim()  : '';
-  document.getElementById('editModal').classList.add('open');
-}
-function closeEditModal() { document.getElementById('editModal').classList.remove('open'); currentEditRow = null; }
-function saveEditRow() {
-  if (!currentEditRow) return;
-  const task   = document.getElementById('em-task').value;
-  const status = document.getElementById('em-status').value;
-  const date   = document.getElementById('em-deadline').value;
-  const owner  = document.getElementById('em-owner').value || '-';
-  const memo   = document.getElementById('em-memo').value  || '-';
-  const taskEl  = currentEditRow.querySelector('.td-task');
-  const badge   = currentEditRow.querySelector('.badge');
-  const dateInp = currentEditRow.querySelector('.date-input');
-  const ownerEl = currentEditRow.querySelector('.td-owner');
-  const memoEl  = currentEditRow.querySelector('.td-memo');
-  if (taskEl)  taskEl.textContent  = task;
-  if (badge)   { badgeCycleArr.forEach(c => badge.classList.remove(c)); badge.classList.add(status); badge.textContent = badgeLabels[status]; }
-  if (dateInp) dateInp.value       = date;
-  if (ownerEl) ownerEl.textContent = owner;
-  if (memoEl)  memoEl.textContent  = memo;
-  closeEditModal();
-  autoSave();
-}
 
 /* ── RENDER ACTION ITEMS ── */
 function fmtDate(v) {

@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공정개발팀 업무 현황</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  background: #eef2f7; color: #1a2332; font-size: 14px; min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d6a4f 100%);
+  color: white; padding: 18px 24px;
+}
+.header h1 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+.header p  { font-size: 12px; opacity: 0.75; }
+.meta { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.meta-item { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 5px 14px; font-size: 11px; }
+.meta-item span { font-weight: 700; font-size: 16px; display: block; }
+.meta-editable { border-radius: 4px; cursor: text; }
+.meta-editable:hover { background: rgba(255,255,255,0.15); outline: 1px dashed rgba(255,255,255,0.4); }
+.meta-editable[contenteditable="true"] { background: rgba(255,255,255,0.2); outline: 2px solid rgba(255,255,255,0.6); padding: 1px 4px; }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  display: flex; background: white; border-bottom: 2px solid #e5e7eb;
+  padding: 0 20px; overflow-x: auto; position: sticky; top: 0; z-index: 20;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.tab-btn {
+  padding: 12px 16px; font-size: 13px; font-weight: 600;
+  border: none; background: none; cursor: pointer; color: #9ca3af;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  white-space: nowrap; transition: all 0.15s;
+}
+.tab-btn:hover { color: #374151; }
+.tab-btn.active { color: #1e3a5f; border-bottom-color: #1e3a5f; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex; gap: 8px; padding: 10px 20px;
+  align-items: center; flex-wrap: wrap;
+  background: #f8fafc; border-bottom: 1px solid #e5e7eb;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 13px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.15s;
+}
+.btn-primary { background: #1e3a5f; color: white; }
+.btn-primary:hover { background: #2d5287; }
+.btn-add { background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; }
+.btn-add:hover { background: #dcfce7; }
+.save-status { font-size: 11px; color: #9ca3af; margin-left: auto; }
+
+/* ── TAB CONTENT ── */
+.tab-content { display: none; padding: 20px; }
+.tab-content.active { display: block; }
+
+/* ── ACTION BOX (주요일정) ── */
+.action-box {
+  background: white; border-radius: 12px; padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px;
+}
+.action-box-title {
+  font-size: 11px; font-weight: 700; color: #9ca3af;
+  letter-spacing: 0.05em; margin-bottom: 12px;
+}
+.action-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.action-card {
+  border-radius: 10px; padding: 12px 14px;
+  border-top: 4px solid #ccc;
+  display: flex; flex-direction: column; gap: 5px;
+  background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.action-card.urgent  { border-top-color: #ef4444; }
+.action-card.watch   { border-top-color: #f59e0b; }
+.action-card.consult { border-top-color: #3b82f6; }
+.action-card.ready   { border-top-color: #10b981; }
+.action-card.overdue { border-top-color: #dc2626; background: #fff5f5; }
+.ac-top { display: flex; align-items: center; gap: 6px; }
+.ac-label { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.urgent .ac-label  { background: #fee2e2; color: #991b1b; }
+.watch .ac-label   { background: #fef9c3; color: #854d0e; }
+.consult .ac-label { background: #dbeafe; color: #1d4ed8; }
+.ready .ac-label   { background: #dcfce7; color: #166534; }
+.overdue .ac-label { background: #fecaca; color: #7f1d1d; }
+.ac-dday { font-size: 13px; font-weight: 800; margin-left: auto; }
+.urgent .ac-dday, .overdue .ac-dday { color: #ef4444; }
+.watch .ac-dday   { color: #f59e0b; }
+.consult .ac-dday { color: #3b82f6; }
+.ready .ac-dday   { color: #10b981; }
+.ac-title  { font-size: 13px; font-weight: 700; color: #1a2332; line-height: 1.4; }
+.ac-detail { font-size: 11px; color: #6b7280; line-height: 1.5; }
+.ac-footer {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 4px; padding-top: 8px;
+  border-top: 1px solid #f3f4f6; font-size: 11px; color: #9ca3af;
+}
+.ac-deadline { font-weight: 600; }
+.urgent .ac-deadline, .overdue .ac-deadline { color: #ef4444; }
+.watch .ac-deadline   { color: #b45309; }
+.consult .ac-deadline { color: #1d4ed8; }
+.ready .ac-deadline   { color: #166534; }
+
+/* ── SECTION GROUP ── */
+.section-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+/* ── WORK CARD (업무 단위 카드) ── */
+.work-card {
+  background: white; border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.work-card .sub-table-wrap { overflow-x: auto; }
+.work-card-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: #1e3a5f; color: white;
+}
+.work-card-header.color-blue   { background: #1e3a5f; }
+.work-card-header.color-green  { background: #1a4731; }
+.work-card-header.color-purple { background: #3b2067; }
+.work-card-header.color-teal   { background: #134e4a; }
+.work-card-header.color-amber  { background: #78350f; }
+
+.work-card-name {
+  font-size: 14px; font-weight: 700; flex: 1; line-height: 1.4;
+}
+.work-card-name.editable:hover { background: rgba(255,255,255,0.15); outline: 1px dashed rgba(255,255,255,0.5); border-radius: 4px; cursor: text; }
+.work-card-name.editable[contenteditable="true"] { background: rgba(255,255,255,0.2); outline: 2px solid rgba(255,255,255,0.7); border-radius: 4px; padding: 2px 6px; }
+.work-card-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 10px; white-space: nowrap; cursor: pointer;
+  background: rgba(255,255,255,0.2); color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.work-card-badge.done-badge { background: rgba(255,255,255,0.9); color: #374151; }
+
+/* ── SUB TABLE ── */
+.sub-table {
+  width: 100%; border-collapse: collapse; font-size: 11px;
+}
+.sub-table th {
+  background: #f1f5f9; color: #6b7280; font-size: 10px; font-weight: 700;
+  padding: 6px 8px; text-align: left; border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+.sub-table td {
+  padding: 6px 8px; border-bottom: 1px solid #f3f4f6;
+  vertical-align: top; color: #374151; line-height: 1.4;
+  word-break: break-word; white-space: normal;
+}
+.sub-table tr:last-child td { border-bottom: none; }
+.sub-table tr:hover td { background: #fafbfc; }
+.sub-table tr.row-completed td { opacity: 0.4; }
+.sub-table tr.row-completed .td-task { text-decoration: line-through; color: #9ca3af; }
+
+.td-num { width: 20px; color: #cbd5e1; font-size: 11px; text-align: center; }
+.td-task { width: 180px; max-width: 180px; word-break: break-word; white-space: normal; font-size: 11px; }
+.td-status { width: 60px; }
+.td-deadline { width: 100px; }
+.td-owner { width: 54px; font-size: 11px; }
+.td-memo { min-width: 160px; color: #6b7280; font-size: 11px; word-break: break-word; white-space: normal; }
+.td-action { width: 70px; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 6px; border-radius: 8px; white-space: nowrap; cursor: pointer;
+}
+.badge-ing     { background: #dcfce7; color: #166534; }
+.badge-wait    { background: #fef9c3; color: #854d0e; }
+.badge-plan    { background: #e0f2fe; color: #0369a1; }
+.badge-urgent  { background: #fee2e2; color: #991b1b; }
+.badge-done    { background: #ede9fe; color: #5b21b6; }
+.badge-hold    { background: #f3f4f6; color: #6b7280; }
+
+/* ── DATE INPUT ── */
+.date-input {
+  border: 1px solid #e2e8f0; border-radius: 5px;
+  padding: 3px 5px; font-size: 11px; color: #374151;
+  background: white; cursor: pointer; width: 108px;
+  font-family: inherit;
+}
+.date-input:focus { outline: none; border-color: #3b82f6; }
+
+/* ── EDITABLE ── */
+.editable { border-radius: 4px; padding: 2px 4px; cursor: text; word-break: break-word; white-space: normal; }
+.editable:hover { background: #f0f9ff; outline: 1px dashed #93c5fd; }
+.editable[contenteditable="true"] {
+  background: #fffbeb; outline: 2px solid #fbbf24;
+}
+
+/* ── ROW ACTIONS ── */
+.row-actions { display: flex; gap: 4px; }
+.row-actions button {
+  font-size: 10px; padding: 2px 6px; border-radius: 5px;
+  border: none; cursor: pointer; font-weight: 600;
+}
+.btn-re   { display: none; }
+.btn-ok   { background: #dcfce7; color: #166534; }
+.btn-del  { background: #fee2e2; color: #991b1b; }
+.btn-undo { background: #f3f4f6; color: #6b7280; font-size: 10px; }
+
+/* ── ADD ROW ── */
+.add-sub-row { background: #f8fafc; display: table-row; }
+.add-sub-row td { padding: 8px 14px; border-top: 1px dashed #e2e8f0; }
+.add-sub-row input {
+  border: 1px solid #d1d5db; border-radius: 6px;
+  padding: 5px 8px; font-size: 12px; font-family: inherit;
+  background: white; width: 100%;
+}
+.btn-add-sub {
+  background: #1e3a5f; color: white; border: none; border-radius: 6px;
+  padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+
+/* ── ADD WORK CARD BUTTON ── */
+.add-card-btn {
+  border: 2px dashed #cbd5e1; border-radius: 12px;
+  padding: 14px; text-align: center;
+  color: #94a3b8; font-size: 13px; font-weight: 600;
+  cursor: pointer; background: white; display: none;
+  transition: all 0.15s;
+}
+.add-card-btn:hover { border-color: #1e3a5f; color: #1e3a5f; background: #f0f4ff; }
+.edit-mode-show { display: inline-flex; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: 14px; padding: 24px;
+  width: 92%; max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18); max-height: 90vh; overflow-y: auto;
+}
+.modal h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+.form-group { margin-bottom: 12px; }
+.form-group label { font-size: 11px; font-weight: 700; color: #6b7280; display: block; margin-bottom: 4px; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; border: 1px solid #d1d5db; border-radius: 8px;
+  padding: 8px 10px; font-size: 13px; font-family: inherit;
+}
+.form-group textarea { resize: vertical; min-height: 56px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.btn-cancel { background: #f3f4f6; color: #374151; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 16px; font-weight: 800; color: #1e3a5f;
+  letter-spacing: 0.02em; margin-bottom: 12px;
+}
+
+@media (max-width: 900px) {
+  .section-group { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .action-cards { grid-template-columns: 1fr; }
+  .td-memo, .td-owner { display: none; }
+  .section-group { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="editable meta-editable" title="더블클릭으로 수정">🔬 공정개발팀 업무 현황</span></h1>
+  <p><span class="editable meta-editable" title="더블클릭으로 수정">팀장 마스터 정리 | 더블클릭으로 수정 가능</span></p>
+  <div class="meta">
+    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">3건</span>진행과제</div>
+    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">3명</span>팀원</div>
+    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">PT · TL</span>배양운영</div>
+    <div class="meta-item"><span class="editable meta-editable" title="더블클릭으로 수정">30종</span>미세조류</div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('all',this)">📋 전체</button>
+  <button class="tab-btn" onclick="showTab('project',this)">🧫 과제</button>
+  <button class="tab-btn" onclick="showTab('analysis',this)">🔬 분석</button>
+  <button class="tab-btn" onclick="showTab('permit',this)">📑 인허가</button>
+  <button class="tab-btn" onclick="showTab('etc',this)">📦 기타</button>
+</div>
+
+<div class="toolbar">
+  <button class="btn btn-add edit-mode-show" onclick="openAddCardModal()">+ 업무 추가</button>
+  <span class="save-status">더블클릭으로 내용 수정 | 배지 클릭으로 상태 변경</span>
+</div>
+
+<!-- ══════════════ 전체 탭 ══════════════ -->
+<div class="tab-content active" id="tab-all">
+
+  <!-- 주요일정 -->
+  <div class="action-box">
+    <div class="action-box-title">⚡ 주요 일정 — 기한 가까운 순</div>
+    <div class="action-cards" id="actionCards">
+      <div style="color:#9ca3af;font-size:13px;grid-column:1/-1;">기한이 입력된 업무가 없어요. 편집 모드에서 기한을 입력하면 자동으로 표시됩니다.</div>
+    </div>
+  </div>
+
+  <!-- 과제 -->
+  <div style="margin-bottom:20px;">
+    <div class="section-label">🧫 과제</div>
+    <div class="section-group" id="sg-project">
+
+      <div class="work-card" data-cat="project" data-wid="w1">
+        <div class="work-card-header color-blue">
+          <span class="work-card-name editable" title="더블클릭으로 수정">아티초크/미세조류 복합소재 분석표준화 및 안정성 교차검증</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r1"><td class="td-num">1</td><td class="td-task editable">분석법 set up (지표성분 분석법 확립)</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r2"><td class="td-num">2</td><td class="td-task editable">복합소재 수령 후 지표성분 안정성 분석</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r3"><td class="td-num">3</td><td class="td-task editable">안정성 교차검증 수행 및 결과 정리</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="work-card" data-cat="project" data-wid="w2">
+        <div class="work-card-header color-green">
+          <span class="work-card-name editable" title="더블클릭으로 수정">해양 글라이칸 고부가 기능성 소재화 및 글로벌 제품화</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r4"><td class="td-num">1</td><td class="td-task editable">PT 분말 한시적 식품원료 인정 — 식약처 심사 대응</td><td class="td-status"><span class="badge badge-wait" onclick="cycleBadge(this)">검토중</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-09-15" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">3/27 제출, 120일 심사, 보완요청 예상</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r5"><td class="td-num">2</td><td class="td-task editable">파라밀론 (유글레나 베타글루칸) 한시적 식품원료 인정 신청</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">마리비온 자료 수령 착수 필요</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r6"><td class="td-num">3</td><td class="td-task editable">유글레나 분말 GRAS 인증</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">컨설팅 업체 협약 완료</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="work-card" data-cat="project" data-wid="w3">
+        <div class="work-card-header color-purple">
+          <span class="work-card-name editable" title="더블클릭으로 수정">선진화과제 — 미세조류 30종 배양 및 소재화</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r7"><td class="td-num">1</td><td class="td-task editable">미세조류 30종 배양 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r8"><td class="td-num">2</td><td class="td-task editable">바이오매스 확보 및 관리</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r9"><td class="td-num">3</td><td class="td-task editable">추출물 제조 및 확보</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 분석 -->
+  <div style="margin-bottom:20px;">
+    <div class="section-label">🔬 분석</div>
+    <div class="section-group" id="sg-analysis">
+
+      <div class="work-card" data-cat="analysis" data-wid="w4">
+        <div class="work-card-header color-teal">
+          <span class="work-card-name editable" title="더블클릭으로 수정">아티초크/미세조류 복합소재 지표성분 분석법 확립</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r10"><td class="td-num">1</td><td class="td-task editable">분석법 set up</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">국책① 연계</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r11"><td class="td-num">2</td><td class="td-task editable">지표성분 정량 분석</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="work-card" data-cat="analysis" data-wid="w5">
+        <div class="work-card-header color-teal">
+          <span class="work-card-name editable" title="더블클릭으로 수정">엄나무 사포닌 함량 분석</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r12"><td class="td-num">1</td><td class="td-task editable">줄기·잎 부위별 추출</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r13"><td class="td-num">2</td><td class="td-task editable">사포닌 함량 정량 분석 (HPLC)</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="work-card" data-cat="analysis" data-wid="w6">
+        <div class="work-card-header color-teal">
+          <span class="work-card-name editable" title="더블클릭으로 수정">푸코잔틴 저장안정성 평가 (PT·TL 분말 + 오일 제형)</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r14"><td class="td-num">1</td><td class="td-task editable">PT 분말 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r15"><td class="td-num">2</td><td class="td-task editable">TL 분말 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r16"><td class="td-num">3</td><td class="td-task editable">오일 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r17"><td class="td-num">4</td><td class="td-task editable">푸코잔틴 함량 주기적 분석</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r18"><td class="td-num">5</td><td class="td-task editable">CKDB-322 저장안정성 모니터링 (12개월차)</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">PT+유산균 복합물, 개별인정형 등록완료</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 인허가 -->
+  <div style="margin-bottom:20px;">
+    <div class="section-label">📑 인허가</div>
+    <div class="section-group" id="sg-permit">
+
+      <div class="work-card" data-cat="permit" data-wid="w7">
+        <div class="work-card-header color-amber">
+          <span class="work-card-name editable" title="더블클릭으로 수정">CKDB-322 (PT+유산균) — 간건강 인체적용시험</span>
+          <span class="work-card-badge badge-urgent" onclick="cycleCardBadge(this)">주의요망</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r19"><td class="td-num">1</td><td class="td-task editable">모집자 확보</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">모집자 부족 상태</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r20"><td class="td-num">2</td><td class="td-task editable">시험식품 신규 제조 (캡슐·알루미늄통·PT분말)</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-07-01" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">부재료 구매완료, 캡슐·알루통·PT분말 확보중</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r21"><td class="td-num">3</td><td class="td-task editable">시험식품 유통기한 관리</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-10-01" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">10월 만료 예정</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="work-card" data-cat="permit" data-wid="w8">
+        <div class="work-card-header color-amber">
+          <span class="work-card-name editable" title="더블클릭으로 수정">TL (T. lutea) — 눈건강 개별인정형 원료 인체적용시험</span>
+          <span class="work-card-badge badge-done done-badge" onclick="cycleCardBadge(this)">등록완료</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r22"><td class="td-num">1</td><td class="td-task editable">개별인정형 원료 등록 완료</td><td class="td-status"><span class="badge badge-done" onclick="cycleBadge(this)">완료</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">눈건강 기능성</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r23"><td class="td-num">2</td><td class="td-task editable">인체적용시험 진행</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 기타 -->
+  <div style="margin-bottom:20px;">
+    <div class="section-label">📦 기타</div>
+    <div class="section-group" id="sg-etc">
+
+      <div class="work-card" data-cat="etc" data-wid="w9">
+        <div class="work-card-header color-blue">
+          <span class="work-card-name editable" title="더블클릭으로 수정">PT·TL 미세조류 생산성 향상 실험 및 배양기 운영</span>
+          <span class="work-card-badge badge-ing" onclick="cycleCardBadge(this)">진행중</span>
+        </div>
+        <div class="sub-table-wrap"><table class="sub-table">
+          <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+          <tbody>
+            <tr data-rid="r24"><td class="td-num">1</td><td class="td-task editable">PT·TL 생산성 향상 실험</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r25"><td class="td-num">2</td><td class="td-task editable">1kL 배양기 4대 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r26"><td class="td-num">3</td><td class="td-task editable">100L 배양기 5대 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r27"><td class="td-num">4</td><td class="td-task editable">터보블로워 (5루베) 도입</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">협의중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">계약·납기 확정 필요</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /tab-all -->
+
+<!-- 나머지 탭들 (필터뷰) -->
+<div class="tab-content" id="tab-project"><div class="section-group" id="fv-project"></div></div>
+<div class="tab-content" id="tab-analysis"><div class="section-group" id="fv-analysis"></div></div>
+<div class="tab-content" id="tab-permit"><div class="section-group" id="fv-permit"></div></div>
+<div class="tab-content" id="tab-etc"><div class="section-group" id="fv-etc"></div></div>
+
+<!-- 수정 모달 -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>✏️ 세부내용 수정</h3>
+    <div class="form-group"><label>세부내용</label><textarea id="em-task" rows="2"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>상태</label>
+        <select id="em-status">
+          <option value="badge-ing">진행중</option><option value="badge-plan">예정/협의중</option>
+          <option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option>
+          <option value="badge-done">완료</option><option value="badge-hold">보류</option>
+        </select>
+      </div>
+      <div class="form-group"><label>기한</label><input type="date" id="em-deadline"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>담당자</label><input id="em-owner" placeholder="이름"></div>
+      <div class="form-group"><label>메모</label><input id="em-memo" placeholder="메모"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveEditRow()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 업무 추가 모달 -->
+<div class="modal-overlay" id="addCardModal">
+  <div class="modal">
+    <h3>+ 업무 추가</h3>
+    <div class="form-group"><label>카테고리</label>
+      <select id="ac-cat">
+        <option value="project">🧫 과제</option><option value="analysis">🔬 분석</option>
+        <option value="permit">📑 인허가</option><option value="etc">📦 기타</option>
+      </select>
+    </div>
+    <div class="form-group"><label>업무명</label><input id="ac-name" placeholder="업무명 입력"></div>
+    <div class="form-group"><label>전체 상태</label>
+      <select id="ac-status">
+        <option value="badge-ing">진행중</option><option value="badge-plan">예정/협의중</option>
+        <option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option>
+        <option value="badge-done">완료</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('addCardModal').classList.remove('open')">취소</button>
+      <button class="btn btn-primary" onclick="addWorkCard()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let editMode = false;
+let currentEditRow = null;
+let ridCounter = 100;
+let widCounter = 20;
+
+const badgeCycleArr = ['badge-ing','badge-wait','badge-plan','badge-urgent','badge-done','badge-hold'];
+const badgeLabels   = {'badge-ing':'진행중','badge-wait':'검토중','badge-plan':'예정/협의중','badge-urgent':'주의요망','badge-done':'완료','badge-hold':'보류'};
+const headerColors  = ['color-blue','color-green','color-purple','color-teal','color-amber'];
+
+/* ── TAB ── */
+function showTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab !== 'all') syncFilterTab(tab);
+}
+function syncFilterTab(cat) {
+  const fv = document.getElementById('fv-' + cat);
+  fv.innerHTML = '';
+  document.querySelectorAll('#tab-all .work-card[data-cat="' + cat + '"]').forEach(card => {
+    const clone = card.cloneNode(true);
+    reattachEvents(clone);
+    fv.appendChild(clone);
+  });
+}
+function reattachEvents(el) {
+  el.querySelectorAll('.badge').forEach(b => b.onclick = () => cycleBadge(b));
+  el.querySelectorAll('.work-card-badge').forEach(b => b.onclick = () => cycleCardBadge(b));
+  el.querySelectorAll('.btn-re').forEach(b => b.onclick = () => openEditRow(b));
+  el.querySelectorAll('.btn-ok').forEach(b => b.onclick = () => completeRow(b));
+  el.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteRow(b));
+  el.querySelectorAll('.btn-add-sub').forEach(b => b.onclick = () => addSubRow(b));
+  el.querySelectorAll('.date-input').forEach(d => d.onchange = () => renderActionItems());
+}
+
+/* ── 더블클릭으로 editable 셀 수정 ── */
+document.addEventListener('dblclick', e => {
+  const el = e.target.closest('.editable');
+  if (!el) return;
+  el.setAttribute('contenteditable', 'true');
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+});
+document.addEventListener('keydown', e => {
+  const el = e.target;
+  if (e.key === 'Enter' && el.classList && el.classList.contains('editable')) {
+    if (e.shiftKey) return; // Shift+Enter는 줄바꿈 허용
+    e.preventDefault();
+    el.removeAttribute('contenteditable');
+    el.blur();
+  }
+});
+
+/* ── BADGE (항상 클릭 가능) ── */
+function cycleBadge(el) {
+  const cur  = badgeCycleArr.find(c => el.classList.contains(c)) || 'badge-ing';
+  const next = badgeCycleArr[(badgeCycleArr.indexOf(cur)+1) % badgeCycleArr.length];
+  badgeCycleArr.forEach(c => el.classList.remove(c));
+  el.classList.add(next); el.textContent = badgeLabels[next];
+}
+function cycleCardBadge(el) {
+  cycleBadge(el);
+  if (el.classList.contains('badge-done')) el.classList.add('done-badge');
+  else el.classList.remove('done-badge');
+}
+
+/* ── COMPLETE / DELETE ── */
+function completeRow(btn) {
+  const row = btn.closest('tr');
+  row.classList.add('row-completed');
+  const badge = row.querySelector('.badge');
+  if (badge) { badgeCycleArr.forEach(c => badge.classList.remove(c)); badge.classList.add('badge-done'); badge.textContent = '완료'; }
+  const okBtn = row.querySelector('.btn-ok'); if (okBtn) okBtn.style.display = 'none';
+  const undoBtn = document.createElement('button');
+  undoBtn.className = 'btn-undo'; undoBtn.textContent = '↩되돌리기';
+  undoBtn.onclick = () => undoComplete(undoBtn);
+  undoBtn.style.display = 'inline-block';
+  row.querySelector('.row-actions').appendChild(undoBtn);
+  autoSave();
+}
+function undoComplete(btn) {
+  const row = btn.closest('tr');
+  row.classList.remove('row-completed');
+  const badge = row.querySelector('.badge');
+  if (badge) { badgeCycleArr.forEach(c => badge.classList.remove(c)); badge.classList.add('badge-ing'); badge.textContent = '진행중'; }
+  btn.remove();
+  const okBtn = row.querySelector('.btn-ok'); if (okBtn) okBtn.style.display = 'inline-block';
+  autoSave();
+}
+function deleteRow(btn) {
+  if (!confirm('삭제하시겠어요?')) return;
+  btn.closest('tr').remove();
+  autoSave();
+}
+
+/* ── ADD SUB ROW ── */
+function addSubRow(btn) {
+  const addRow = btn.closest('.add-sub-row');
+  const tbody  = addRow.closest('tbody');
+  const task   = addRow.querySelector('.new-sub-task').value.trim();
+  if (!task) return alert('세부내용을 입력해주세요');
+  const status = addRow.querySelector('.new-sub-status').value;
+  const date   = addRow.querySelector('.new-sub-date').value;
+  const owner  = addRow.querySelector('.new-sub-owner').value || '-';
+  const memo   = addRow.querySelector('.new-sub-memo').value || '-';
+  const rid    = 'r' + ridCounter++;
+  // 번호 계산
+  const dataRows = tbody.querySelectorAll('tr[data-rid]');
+  const num = dataRows.length + 1;
+
+  const tr = document.createElement('tr');
+  tr.dataset.rid = rid;
+  tr.innerHTML = `<td class="td-num">${num}</td>
+    <td class="td-task editable" contenteditable="false">${task}</td>
+    <td class="td-status"><span class="badge ${status}" onclick="cycleBadge(this)">${badgeLabels[status]}</span></td>
+    <td class="td-deadline"><input type="date" class="date-input" value="${date}" onchange="renderActionItems()"></td>
+    <td class="td-owner editable" contenteditable="false">${owner}</td>
+    <td class="td-memo editable" contenteditable="false">${memo}</td>
+    <td class="td-action"><div class="row-actions">
+      <button class="btn-re" onclick="openEditRow(this)" style="display:inline-block">수정</button>
+      <button class="btn-ok" onclick="completeRow(this)" style="display:inline-block">✓완료</button>
+      <button class="btn-del" onclick="deleteRow(this)" style="display:inline-block">삭제</button>
+    </div></td>`;
+  tbody.insertBefore(tr, addRow);
+  addRow.querySelector('.new-sub-task').value = '';
+  addRow.querySelector('.new-sub-date').value = '';
+  addRow.querySelector('.new-sub-owner').value = '';
+  addRow.querySelector('.new-sub-memo').value = '';
+  autoSave();
+}
+
+/* ── ADD WORK CARD ── */
+function openAddCardModal() { document.getElementById('addCardModal').classList.add('open'); }
+function addWorkCard() {
+  const cat    = document.getElementById('ac-cat').value;
+  const name   = document.getElementById('ac-name').value.trim();
+  if (!name) return alert('업무명을 입력해주세요');
+  const status = document.getElementById('ac-status').value;
+  const wid    = 'w' + widCounter++;
+  const color  = headerColors[Math.floor(Math.random() * headerColors.length)];
+
+  const card = document.createElement('div');
+  card.className = 'work-card'; card.dataset.cat = cat; card.dataset.wid = wid;
+  card.innerHTML = `
+    <div class="work-card-header ${color}">
+      <span class="work-card-name editable" title="더블클릭으로 수정">${name}</span>
+      <span class="work-card-badge ${status}" onclick="cycleCardBadge(this)">${badgeLabels[status]}</span>
+    </div>
+    <div class="sub-table-wrap"><table class="sub-table">
+      <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
+      <tbody>
+        <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
+      </tbody>
+    </table></div>`;
+  document.getElementById('sg-' + cat).appendChild(card);
+  document.getElementById('addCardModal').classList.remove('open');
+  document.getElementById('ac-name').value = '';
+  autoSave();
+}
+
+/* ── EDIT ROW MODAL ── */
+function openEditRow(btn) {
+  currentEditRow = btn.closest('tr');
+  const taskEl  = currentEditRow.querySelector('.td-task');
+  const badge   = currentEditRow.querySelector('.badge');
+  const dateInp = currentEditRow.querySelector('.date-input');
+  const ownerEl = currentEditRow.querySelector('.td-owner');
+  const memoEl  = currentEditRow.querySelector('.td-memo');
+  document.getElementById('em-task').value    = taskEl ? taskEl.textContent.trim() : '';
+  const cur = badgeCycleArr.find(c => badge && badge.classList.contains(c)) || 'badge-ing';
+  document.getElementById('em-status').value  = cur;
+  document.getElementById('em-deadline').value = dateInp ? dateInp.value : '';
+  document.getElementById('em-owner').value   = ownerEl ? ownerEl.textContent.trim() : '';
+  document.getElementById('em-memo').value    = memoEl  ? memoEl.textContent.trim()  : '';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal() { document.getElementById('editModal').classList.remove('open'); currentEditRow = null; }
+function saveEditRow() {
+  if (!currentEditRow) return;
+  const task   = document.getElementById('em-task').value;
+  const status = document.getElementById('em-status').value;
+  const date   = document.getElementById('em-deadline').value;
+  const owner  = document.getElementById('em-owner').value || '-';
+  const memo   = document.getElementById('em-memo').value  || '-';
+  const taskEl  = currentEditRow.querySelector('.td-task');
+  const badge   = currentEditRow.querySelector('.badge');
+  const dateInp = currentEditRow.querySelector('.date-input');
+  const ownerEl = currentEditRow.querySelector('.td-owner');
+  const memoEl  = currentEditRow.querySelector('.td-memo');
+  if (taskEl)  taskEl.textContent  = task;
+  if (badge)   { badgeCycleArr.forEach(c => badge.classList.remove(c)); badge.classList.add(status); badge.textContent = badgeLabels[status]; }
+  if (dateInp) dateInp.value       = date;
+  if (ownerEl) ownerEl.textContent = owner;
+  if (memoEl)  memoEl.textContent  = memo;
+  closeEditModal();
+  autoSave();
+}
+
+/* ── RENDER ACTION ITEMS ── */
+function fmtDate(v) {
+  if (!v) return '';
+  const m = v.match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[1]}년 ${+m[2]}월 ${+m[3]}일` : v;
+}
+function renderActionItems() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const items = [];
+  document.querySelectorAll('#tab-all tr[data-rid]').forEach(row => {
+    if (row.classList.contains('row-completed')) return;
+    const badge = row.querySelector('.badge');
+    if (badge && badge.classList.contains('badge-done')) return;
+    const dateInp = row.querySelector('.date-input');
+    if (!dateInp || !dateInp.value) return;
+    const date = new Date(dateInp.value);
+    const diffDays = Math.ceil((date - today) / 86400000);
+    const taskEl = row.querySelector('.td-task');
+    const cardName = row.closest('.work-card')?.querySelector('.work-card-name')?.textContent.trim() || '';
+    const ownerEl = row.querySelector('.td-owner');
+    const memoEl  = row.querySelector('.td-memo');
+    items.push({
+      task: taskEl ? taskEl.textContent.trim() : '',
+      card: cardName, date, dateStr: dateInp.value, diffDays,
+      owner: ownerEl ? ownerEl.textContent.trim() : '',
+      memo:  memoEl  ? memoEl.textContent.trim()  : ''
+    });
+  });
+  items.sort((a,b) => a.date - b.date);
+  const container = document.getElementById('actionCards');
+  if (!items.length) {
+    container.innerHTML = '<div style="color:#9ca3af;font-size:13px;grid-column:1/-1;padding:4px 0;">기한이 입력된 업무가 없어요.</div>';
+    return;
+  }
+  container.innerHTML = items.map(item => {
+    let cls, label, dStr;
+    if (item.diffDays < 0)       { cls='overdue'; label='기한초과'; dStr=`D+${Math.abs(item.diffDays)}`; }
+    else if (item.diffDays <= 14){ cls='urgent';  label='긴급';     dStr=`D-${item.diffDays}`; }
+    else if (item.diffDays <= 30){ cls='watch';   label='임박';     dStr=`D-${item.diffDays}`; }
+    else if (item.diffDays <= 60){ cls='consult'; label='예정';     dStr=`D-${item.diffDays}`; }
+    else                         { cls='ready';   label='준비';     dStr=`D-${item.diffDays}`; }
+    const ownerTxt = item.owner && item.owner!=='-' ? `<span>👤 ${item.owner}</span>` : '';
+    const memoTxt  = item.memo  && item.memo !=='-' ? `<span>📝 ${item.memo}</span>`  : '';
+    return `<div class="action-card ${cls}">
+      <div class="ac-top"><span class="ac-label">${label}</span><span class="ac-dday">${dStr}</span></div>
+      <div class="ac-title">${item.task}</div>
+      <div class="ac-detail">${item.card}</div>
+      <div class="ac-footer"><span class="ac-deadline">📅 ${fmtDate(item.dateStr)}</span>${ownerTxt}${memoTxt}</div>
+    </div>`;
+  }).join('');
+}
+
+
+/* ── 저장 / 불러오기 (localStorage) ── */
+const SAVE_KEY = 'processTeamData_v1';
+
+function saveToStorage() {
+  // 모든 work-card의 상태를 직렬화해서 저장
+  const cards = [];
+  document.querySelectorAll('#tab-all .work-card').forEach(card => {
+    const rows = [];
+    card.querySelectorAll('tr[data-rid]').forEach(row => {
+      const badge    = row.querySelector('.badge');
+      const dateInp  = row.querySelector('.date-input');
+      const taskEl   = row.querySelector('.td-task');
+      const ownerEl  = row.querySelector('.td-owner');
+      const memoEl   = row.querySelector('.td-memo');
+      rows.push({
+        rid:       row.dataset.rid,
+        task:      taskEl   ? taskEl.textContent.trim()   : '',
+        status:    badge    ? (badgeCycleArr.find(c => badge.classList.contains(c)) || 'badge-ing') : 'badge-ing',
+        date:      dateInp  ? dateInp.value               : '',
+        owner:     ownerEl  ? ownerEl.textContent.trim()  : '-',
+        memo:      memoEl   ? memoEl.textContent.trim()   : '-',
+        completed: row.classList.contains('row-completed')
+      });
+    });
+    const cardBadge = card.querySelector('.work-card-badge');
+    cards.push({
+      wid:      card.dataset.wid,
+      cat:      card.dataset.cat,
+      name:     card.querySelector('.work-card-name')?.textContent.trim() || '',
+      status:   cardBadge ? (badgeCycleArr.find(c => cardBadge.classList.contains(c)) || 'badge-ing') : 'badge-ing',
+      colorCls: card.querySelector('.work-card-header')?.className.replace('work-card-header','').trim() || 'color-blue',
+      rows
+    });
+  });
+  localStorage.setItem(SAVE_KEY, JSON.stringify(cards));
+  // 저장 표시
+  const st = document.getElementById('saveStatus');
+  if (st) {
+    st.textContent = '✅ 저장됨';
+    st.style.color = '#10b981';
+    setTimeout(() => { st.textContent = '더블클릭으로 내용 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 1500);
+  }
+}
+
+function loadFromStorage() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return;
+  let cards;
+  try { cards = JSON.parse(raw); } catch(e) { return; }
+
+  // 섹션 그룹 초기화
+  ['project','analysis','permit','etc'].forEach(cat => {
+    const sg = document.getElementById('sg-' + cat);
+    if (sg) sg.innerHTML = '';
+  });
+
+  cards.forEach(cd => {
+    const sg = document.getElementById('sg-' + cd.cat);
+    if (!sg) return;
+    // 카드 생성
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.dataset.cat = cd.cat;
+    card.dataset.wid = cd.wid;
+    const statusLabel = badgeLabels[cd.status] || '진행중';
+    const doneCls = cd.status === 'badge-done' ? ' done-badge' : '';
+    card.innerHTML = `
+      <div class="work-card-header ${cd.colorCls}">
+        <span class="work-card-name editable" title="더블클릭으로 수정">${cd.name}</span>
+        <span class="work-card-badge ${cd.status}${doneCls}" onclick="cycleCardBadge(this)">${statusLabel}</span>
+      </div>
+      <div class="sub-table-wrap"><table class="sub-table">
+        <thead><tr>
+          <th class="td-num">#</th><th class="td-task">세부내용</th>
+          <th class="td-status">상태</th><th class="td-deadline">기한</th>
+          <th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table></div>`;
+    const tbody = card.querySelector('tbody');
+    cd.rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.dataset.rid = r.rid;
+      if (r.completed) tr.classList.add('row-completed');
+      const bl = badgeLabels[r.status] || '진행중';
+      tr.innerHTML = `
+        <td class="td-num">${i+1}</td>
+        <td class="td-task editable">${r.task}</td>
+        <td class="td-status"><span class="badge ${r.status}" onclick="cycleBadge(this)">${bl}</span></td>
+        <td class="td-deadline"><input type="date" class="date-input" value="${r.date}" onchange="autoSave()"></td>
+        <td class="td-owner editable">${r.owner}</td>
+        <td class="td-memo editable">${r.memo}</td>
+        <td class="td-action"><div class="row-actions">
+          
+          <button class="btn-ok" onclick="completeRow(this)">✓완료</button>
+          <button class="btn-del" onclick="deleteRow(this)">삭제</button>
+          ${r.completed ? '<button class="btn-undo" onclick="undoComplete(this)">↩되돌리기</button>' : ''}
+        </div></td>`;
+      tbody.appendChild(tr);
+    });
+    // 추가 입력행
+    const addRow = document.createElement('tr');
+    addRow.className = 'add-sub-row';
+    addRow.innerHTML = `<td></td>
+      <td><input placeholder="세부내용 입력..." class="new-sub-task"></td>
+      <td><select class="new-sub-status">
+        <option value="badge-ing">진행중</option><option value="badge-plan">예정</option>
+        <option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option>
+      </select></td>
+      <td><input type="date" class="new-sub-date date-input"></td>
+      <td><input placeholder="담당자" class="new-sub-owner"></td>
+      <td><input placeholder="메모" class="new-sub-memo"></td>
+      <td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td>`;
+    tbody.appendChild(addRow);
+    sg.appendChild(card);
+  });
+  renderActionItems();
+}
+
+// 자동저장 트리거
+function autoSave() {
+  saveToStorage();
+  renderActionItems();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadFromStorage();
+  renderActionItems();
+
+  // 모든 수정 이벤트에 자동저장 연결
+  document.addEventListener('blur', e => {
+    if (e.target.classList && e.target.classList.contains('editable')) {
+      e.target.removeAttribute('contenteditable');
+      autoSave();
+    }
+  }, true);
+});
+</script>
+</body>
+</html>

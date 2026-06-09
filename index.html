@@ -78,6 +78,8 @@ body {
 /* ── TAB CONTENT ── */
 .tab-content { display: none; padding: 20px; }
 .tab-content.active { display: block; }
+#memo-area { width: 100%; height: calc(100vh - 160px); padding: 14px; font-size: 14px; font-family: inherit; border: 1px solid #e5e7eb; border-radius: 8px; resize: none; outline: none; line-height: 1.6; color: #1e293b; box-sizing: border-box; }
+#memo-area:focus { border-color: #1e3a5f; }
 
 /* ── ACTION BOX (주요일정) ── */
 .action-box {
@@ -407,6 +409,7 @@ body {
   <button class="tab-btn" onclick="showTab('analysis',this)">🔬 분석</button>
   <button class="tab-btn" onclick="showTab('permit',this)">📑 인허가</button>
   <button class="tab-btn" onclick="showTab('etc',this)">📦 기타</button>
+  <button class="tab-btn" onclick="showTab('memo',this)">📝 메모장</button>
 </div>
 
 <div class="toolbar">
@@ -610,6 +613,9 @@ body {
 <div class="tab-content" id="tab-analysis"><div class="section-group" id="fv-analysis"></div></div>
 <div class="tab-content" id="tab-permit"><div class="section-group" id="fv-permit"></div></div>
 <div class="tab-content" id="tab-etc"><div class="section-group" id="fv-etc"></div></div>
+<div class="tab-content" id="tab-memo">
+  <textarea id="memo-area" placeholder="자유롭게 메모하세요..." oninput="autoSave()"></textarea>
+</div>
 
 <!-- 색상 설정 모달 -->
 <div class="modal-overlay" id="colorModal">
@@ -731,7 +737,7 @@ function showTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   btn.classList.add('active');
-  if (tab !== 'all') syncFilterTab(tab);
+  if (tab !== 'all' && tab !== 'memo') syncFilterTab(tab);
 }
 function syncFilterTab(cat) {
   const fv = document.getElementById('fv-' + cat);
@@ -1060,7 +1066,8 @@ function collectData() {
     lbl: item.querySelector('.meta-lbl')?.textContent.trim() || '',
     mid: item.dataset.mid
   }));
-  return { cards, title, metaItems };
+  const memo = document.getElementById('memo-area')?.value || '';
+  return { cards, title, metaItems, memo };
 }
 
 /* ── GitHub SHA 가져오기 ── */
@@ -1183,6 +1190,8 @@ function renderData(data) {
       mc.insertBefore(div, addBtn);
     });
   }
+  const memoArea = document.getElementById('memo-area');
+  if (memoArea && data.memo != null) memoArea.value = data.memo;
   ['project','analysis','permit','etc'].forEach(cat => {
     const sg = document.getElementById('sg-' + cat);
     if (sg) sg.innerHTML = '';

@@ -159,6 +159,8 @@ body {
   border: 1px solid rgba(255,255,255,0.3);
 }
 .work-card-badge.done-badge { background: rgba(255,255,255,0.9); color: #374151; }
+.btn-del-card { margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 14px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+.btn-del-card:hover { color: #fff; background: rgba(255,0,0,0.4); }
 
 /* ── SUB TABLE ── */
 .sub-table {
@@ -871,6 +873,11 @@ function deleteRow(btn) {
   btn.closest('tr').remove();
   autoSave();
 }
+function deleteCard(btn) {
+  if (!confirm('업무 카드를 삭제하시겠어요?')) return;
+  btn.closest('.work-card').remove();
+  autoSave();
+}
 
 /* ── ADD SUB ROW ── */
 function addSubRow(btn) {
@@ -879,7 +886,7 @@ function addSubRow(btn) {
   const task   = addRow.querySelector('.new-sub-task').value.trim();
   if (!task) return alert('세부내용을 입력해주세요');
   const status    = addRow.querySelector('.new-sub-status').value;
-  const startDate = addRow.querySelector('.new-sub-startdate').value;
+  const startDate = addRow.querySelector('.new-sub-startdate')?.value || '';
   const date      = addRow.querySelector('.new-sub-date').value;
   const owner     = addRow.querySelector('.new-sub-owner').value || '-';
   const memo      = addRow.querySelector('.new-sub-memo').value || '-';
@@ -927,6 +934,7 @@ function addWorkCard() {
     <div class="work-card-header ${color}">
       <span class="work-card-name editable" title="더블클릭으로 수정">${name}</span>
       <span class="work-card-badge ${status}" onclick="cycleCardBadge(this)">${badgeLabels[status]}</span>
+      <button class="btn-del-card" onclick="deleteCard(this)" title="업무 삭제">✕</button>
     </div>
     <div class="sub-table-wrap"><table class="sub-table">
       <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
@@ -1256,6 +1264,7 @@ function renderData(data) {
       <div class="work-card-header ${cd.colorCls}">
         <span class="work-card-name editable" title="더블클릭으로 수정">${cd.name}</span>
         <span class="work-card-badge ${cd.status}${doneCls}" onclick="cycleCardBadge(this)">${statusLabel}</span>
+        <button class="btn-del-card" onclick="deleteCard(this)" title="업무 삭제">✕</button>
       </div>
       <div class="sub-table-wrap"><table class="sub-table">
         <thead><tr>

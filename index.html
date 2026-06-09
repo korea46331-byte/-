@@ -358,7 +358,8 @@ body {
   .add-sub-row input, .add-sub-row select { font-size: 12px; padding: 6px 8px; width: 100%; }
   .btn-add-sub { width: 100%; padding: 8px; font-size: 13px; margin-top: 4px; }
 
-  .date-input { width: 100%; font-size: 12px; }
+  .sub-table tr[data-rid] .date-input { width: auto; font-size: 11px; max-width: 130px; }
+  .add-sub-row .date-input { width: 100%; font-size: 12px; }
 
   .modal { padding: 16px; width: 95%; }
   .modal h3 { font-size: 14px; }
@@ -1262,11 +1263,11 @@ function renderData(data) {
       const bl = badgeLabels[r.status] || '진행중';
       tr.innerHTML = `
         <td class="td-num">${i+1}</td>
-        <td class="td-task editable">${r.task}</td>
+        <td class="td-task editable">${textToHtml(r.task)}</td>
         <td class="td-status"><span class="badge ${r.status}" onclick="cycleBadge(this)">${bl}</span></td>
         <td class="td-deadline"><input type="date" class="date-input" value="${r.date}" onchange="autoSave()"></td>
         <td class="td-owner editable">${r.owner}</td>
-        <td class="td-memo editable">${r.memo}</td>
+        <td class="td-memo editable">${textToHtml(r.memo)}</td>
         <td class="td-action"><div class="row-actions">
           <button class="btn-ok" onclick="completeRow(this)">✓완료</button>
           <button class="btn-del" onclick="deleteRow(this)">삭제</button>

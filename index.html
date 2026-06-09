@@ -298,13 +298,12 @@ body {
   .work-card-name { font-size: 12px; }
   .work-card-badge { font-size: 9px; padding: 2px 6px; }
 
-  /* 모바일: 테이블 숨기고 row-card 방식으로 */
   .sub-table-wrap { overflow-x: visible; }
   .sub-table thead { display: none; }
   .sub-table, .sub-table tbody, .sub-table tr { display: block; width: 100%; }
   .sub-table td { display: none; }
 
-  .sub-table tr[data-rid] { 
+  .sub-table tr[data-rid] {
     display: block;
     padding: 10px 12px;
     border-bottom: 1px solid #f0f0f0;
@@ -344,7 +343,6 @@ body {
   .td-action { width: auto; }
   .btn-ok, .btn-del, .btn-undo { font-size: 11px; padding: 4px 8px; }
 
-  /* 추가 입력행 모바일 */
   .add-sub-row { display: block !important; padding: 10px 12px; border-top: 1px dashed #e2e8f0; }
   .add-sub-row td { display: block !important; padding: 3px 0; width: 100%; }
   .add-sub-row input, .add-sub-row select { font-size: 12px; padding: 6px 8px; width: 100%; }
@@ -410,9 +408,9 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r1"><td class="td-num">1</td><td class="td-task editable">분석법 set up (지표성분 분석법 확립)</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r2"><td class="td-num">2</td><td class="td-task editable">복합소재 수령 후 지표성분 안정성 분석</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r3"><td class="td-num">3</td><td class="td-task editable">안정성 교차검증 수행 및 결과 정리</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r1"><td class="td-num">1</td><td class="td-task editable">분석법 set up (지표성분 분석법 확립)</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r2"><td class="td-num">2</td><td class="td-task editable">복합소재 수령 후 지표성분 안정성 분석</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r3"><td class="td-num">3</td><td class="td-task editable">안정성 교차검증 수행 및 결과 정리</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -426,9 +424,9 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r4"><td class="td-num">1</td><td class="td-task editable">PT 분말 한시적 식품원료 인정 — 식약처 심사 대응</td><td class="td-status"><span class="badge badge-wait" onclick="cycleBadge(this)">검토중</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-09-15" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">3/27 제출, 120일 심사, 보완요청 예상</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r5"><td class="td-num">2</td><td class="td-task editable">파라밀론 (유글레나 베타글루칸) 한시적 식품원료 인정 신청</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">마리비온 자료 수령 착수 필요</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r6"><td class="td-num">3</td><td class="td-task editable">유글레나 분말 GRAS 인증</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">컨설팅 업체 협약 완료</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r4"><td class="td-num">1</td><td class="td-task editable">PT 분말 한시적 식품원료 인정 — 식약처 심사 대응</td><td class="td-status"><span class="badge badge-wait" onclick="cycleBadge(this)">검토중</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-09-15" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">3/27 제출, 120일 심사, 보완요청 예상</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r5"><td class="td-num">2</td><td class="td-task editable">파라밀론 (유글레나 베타글루칸) 한시적 식품원료 인정 신청</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">마리비온 자료 수령 착수 필요</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r6"><td class="td-num">3</td><td class="td-task editable">유글레나 분말 GRAS 인증</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">컨설팅 업체 협약 완료</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -442,9 +440,9 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r7"><td class="td-num">1</td><td class="td-task editable">미세조류 30종 배양 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r8"><td class="td-num">2</td><td class="td-task editable">바이오매스 확보 및 관리</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r9"><td class="td-num">3</td><td class="td-task editable">추출물 제조 및 확보</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r7"><td class="td-num">1</td><td class="td-task editable">미세조류 30종 배양 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r8"><td class="td-num">2</td><td class="td-task editable">바이오매스 확보 및 관리</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r9"><td class="td-num">3</td><td class="td-task editable">추출물 제조 및 확보</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -466,8 +464,8 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r10"><td class="td-num">1</td><td class="td-task editable">분석법 set up</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">국책① 연계</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r11"><td class="td-num">2</td><td class="td-task editable">지표성분 정량 분석</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r10"><td class="td-num">1</td><td class="td-task editable">분석법 set up</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">국책① 연계</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r11"><td class="td-num">2</td><td class="td-task editable">지표성분 정량 분석</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -481,8 +479,8 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r12"><td class="td-num">1</td><td class="td-task editable">줄기·잎 부위별 추출</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r13"><td class="td-num">2</td><td class="td-task editable">사포닌 함량 정량 분석 (HPLC)</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r12"><td class="td-num">1</td><td class="td-task editable">줄기·잎 부위별 추출</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r13"><td class="td-num">2</td><td class="td-task editable">사포닌 함량 정량 분석 (HPLC)</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">예정</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -496,11 +494,11 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r14"><td class="td-num">1</td><td class="td-task editable">PT 분말 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r15"><td class="td-num">2</td><td class="td-task editable">TL 분말 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r16"><td class="td-num">3</td><td class="td-task editable">오일 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r17"><td class="td-num">4</td><td class="td-task editable">푸코잔틴 함량 주기적 분석</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r18"><td class="td-num">5</td><td class="td-task editable">CKDB-322 저장안정성 모니터링 (12개월차)</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">PT+유산균 복합물, 개별인정형 등록완료</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r14"><td class="td-num">1</td><td class="td-task editable">PT 분말 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r15"><td class="td-num">2</td><td class="td-task editable">TL 분말 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r16"><td class="td-num">3</td><td class="td-task editable">오일 제형 저장안정성</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r17"><td class="td-num">4</td><td class="td-task editable">푸코잔틴 함량 주기적 분석</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r18"><td class="td-num">5</td><td class="td-task editable">CKDB-322 저장안정성 모니터링 (12개월차)</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">PT+유산균 복합물, 개별인정형 등록완료</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -522,9 +520,9 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r19"><td class="td-num">1</td><td class="td-task editable">모집자 확보</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">모집자 부족 상태</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r20"><td class="td-num">2</td><td class="td-task editable">시험식품 신규 제조 (캡슐·알루미늄통·PT분말)</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-07-01" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">부재료 구매완료, 캡슐·알루통·PT분말 확보중</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r21"><td class="td-num">3</td><td class="td-task editable">시험식품 유통기한 관리</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-10-01" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">10월 만료 예정</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r19"><td class="td-num">1</td><td class="td-task editable">모집자 확보</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">모집자 부족 상태</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r20"><td class="td-num">2</td><td class="td-task editable">시험식품 신규 제조 (캡슐·알루미늄통·PT분말)</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-07-01" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">부재료 구매완료, 캡슐·알루통·PT분말 확보중</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r21"><td class="td-num">3</td><td class="td-task editable">시험식품 유통기한 관리</td><td class="td-status"><span class="badge badge-urgent" onclick="cycleBadge(this)">주의요망</span></td><td class="td-deadline"><input type="date" class="date-input" value="2025-10-01" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">10월 만료 예정</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -538,8 +536,8 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r22"><td class="td-num">1</td><td class="td-task editable">개별인정형 원료 등록 완료</td><td class="td-status"><span class="badge badge-done" onclick="cycleBadge(this)">완료</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">눈건강 기능성</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r23"><td class="td-num">2</td><td class="td-task editable">인체적용시험 진행</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r22"><td class="td-num">1</td><td class="td-task editable">개별인정형 원료 등록 완료</td><td class="td-status"><span class="badge badge-done" onclick="cycleBadge(this)">완료</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">눈건강 기능성</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r23"><td class="td-num">2</td><td class="td-task editable">인체적용시험 진행</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -561,10 +559,10 @@ body {
         <div class="sub-table-wrap"><table class="sub-table">
           <thead><tr><th class="td-num">#</th><th class="td-task">세부내용</th><th class="td-status">상태</th><th class="td-deadline">기한</th><th class="td-owner">담당자</th><th class="td-memo">메모</th><th class="td-action"></th></tr></thead>
           <tbody>
-            <tr data-rid="r24"><td class="td-num">1</td><td class="td-task editable">PT·TL 생산성 향상 실험</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r25"><td class="td-num">2</td><td class="td-task editable">1kL 배양기 4대 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r26"><td class="td-num">3</td><td class="td-task editable">100L 배양기 5대 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
-            <tr data-rid="r27"><td class="td-num">4</td><td class="td-task editable">터보블로워 (5루베) 도입</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">협의중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="renderActionItems()"></td><td class="td-owner editable">-</td><td class="td-memo editable">계약·납기 확정 필요</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r24"><td class="td-num">1</td><td class="td-task editable">PT·TL 생산성 향상 실험</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r25"><td class="td-num">2</td><td class="td-task editable">1kL 배양기 4대 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r26"><td class="td-num">3</td><td class="td-task editable">100L 배양기 5대 운영</td><td class="td-status"><span class="badge badge-ing" onclick="cycleBadge(this)">진행중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">-</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
+            <tr data-rid="r27"><td class="td-num">4</td><td class="td-task editable">터보블로워 (5루베) 도입</td><td class="td-status"><span class="badge badge-plan" onclick="cycleBadge(this)">협의중</span></td><td class="td-deadline"><input type="date" class="date-input" onchange="autoSave()"></td><td class="td-owner editable">-</td><td class="td-memo editable">계약·납기 확정 필요</td><td class="td-action"><div class="row-actions"><button class="btn-ok" onclick="completeRow(this)">✓완료</button><button class="btn-del" onclick="deleteRow(this)">삭제</button></div></td></tr>
             <tr class="add-sub-row"><td></td><td><input placeholder="세부내용 입력..." class="new-sub-task"></td><td><select class="new-sub-status"><option value="badge-ing">진행중</option><option value="badge-plan">예정</option><option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option></select></td><td><input type="date" class="new-sub-date date-input"></td><td><input placeholder="담당자" class="new-sub-owner"></td><td><input placeholder="메모" class="new-sub-memo"></td><td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td></tr>
           </tbody>
         </table></div>
@@ -722,7 +720,7 @@ function reattachEvents(el) {
   el.querySelectorAll('.btn-ok').forEach(b => b.onclick = () => completeRow(b));
   el.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteRow(b));
   el.querySelectorAll('.btn-add-sub').forEach(b => b.onclick = () => addSubRow(b));
-  el.querySelectorAll('.date-input').forEach(d => d.onchange = () => renderActionItems());
+  el.querySelectorAll('.date-input').forEach(d => d.onchange = () => autoSave());
 }
 
 /* ── 더블클릭으로 editable 셀 수정 ── */
@@ -741,19 +739,20 @@ document.addEventListener('dblclick', e => {
 document.addEventListener('keydown', e => {
   const el = e.target;
   if (e.key === 'Enter' && el.classList && el.classList.contains('editable')) {
-    if (e.shiftKey) return; // Shift+Enter는 줄바꿈 허용
+    if (e.shiftKey) return;
     e.preventDefault();
     el.removeAttribute('contenteditable');
     el.blur();
   }
 });
 
-/* ── BADGE (항상 클릭 가능) ── */
+/* ── BADGE ── */
 function cycleBadge(el) {
   const cur  = badgeCycleArr.find(c => el.classList.contains(c)) || 'badge-ing';
   const next = badgeCycleArr[(badgeCycleArr.indexOf(cur)+1) % badgeCycleArr.length];
   badgeCycleArr.forEach(c => el.classList.remove(c));
   el.classList.add(next); el.textContent = badgeLabels[next];
+  autoSave();
 }
 function cycleCardBadge(el) {
   cycleBadge(el);
@@ -801,7 +800,6 @@ function addSubRow(btn) {
   const owner  = addRow.querySelector('.new-sub-owner').value || '-';
   const memo   = addRow.querySelector('.new-sub-memo').value || '-';
   const rid    = 'r' + ridCounter++;
-  // 번호 계산
   const dataRows = tbody.querySelectorAll('tr[data-rid]');
   const num = dataRows.length + 1;
 
@@ -810,7 +808,7 @@ function addSubRow(btn) {
   tr.innerHTML = `<td class="td-num">${num}</td>
     <td class="td-task editable" contenteditable="false">${task}</td>
     <td class="td-status"><span class="badge ${status}" onclick="cycleBadge(this)">${badgeLabels[status]}</span></td>
-    <td class="td-deadline"><input type="date" class="date-input" value="${date}" onchange="renderActionItems()"></td>
+    <td class="td-deadline"><input type="date" class="date-input" value="${date}" onchange="autoSave()"></td>
     <td class="td-owner editable" contenteditable="false">${owner}</td>
     <td class="td-memo editable" contenteditable="false">${memo}</td>
     <td class="td-action"><div class="row-actions">
@@ -945,7 +943,7 @@ function renderActionItems() {
   }).join('');
 }
 
-
+/* ── 색상 ── */
 const COLOR_KEY = 'processTeamColors_v1';
 const defaultColors = { project: '#1e3a5f', analysis: '#134e4a', permit: '#4a1d1d', etc: '#3b2a0f' };
 let catColors = { ...defaultColors };
@@ -983,10 +981,10 @@ function applyColors() {
   closeColorModal();
 }
 
-/* ── GitHub 자동저장 ── */
+/* ── GitHub 설정 ── */
 const GH_TOKEN_KEY = 'gh_token_v1';
 const GH_OWNER = 'korea46331-byte';
-const GH_REPO  = '-';
+const GH_REPO  = 'schedule';
 const GH_DATA  = 'data.json';
 
 function getToken() { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
@@ -1023,46 +1021,13 @@ function collectData() {
       rows
     });
   });
-  // 헤더 메타도 저장
   const metaEls = document.querySelectorAll('.meta-editable');
   const meta = Array.from(metaEls).map(el => el.textContent.trim());
   return { cards, meta };
 }
 
-/* ── GitHub data.json 저장 ── */
-let ghSaveTimer = null;
-let dataSha = null; // data.json의 현재 SHA
-
-async function saveToGitHub() {
-  const token = getToken();
-  if (!token) return;
-  const st = document.getElementById('saveStatus');
-  try {
-    const data = collectData();
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}`;
-    const body = { message: '업무 자동저장', content };
-    if (dataSha) body.sha = dataSha;
-
-    const res = await fetch(url, {
-      method: 'PUT',
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const result = await res.json();
-    if (result.content) {
-      dataSha = result.content.sha;
-      if (st) { st.textContent = '☁️ 저장됨'; st.style.color = '#10b981'; setTimeout(() => { st.textContent = '더블클릭으로 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 2000); }
-    } else {
-      // SHA 충돌 시 다시 가져와서 재시도
-      await refreshSha();
-      await saveToGitHub();
-    }
-  } catch(e) {
-    console.error('GitHub 저장 실패:', e);
-    if (st) { st.textContent = '⚠️ 저장 실패'; st.style.color = '#ef4444'; setTimeout(() => { st.textContent = '더블클릭으로 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 2000); }
-  }
-}
+/* ── GitHub SHA 가져오기 ── */
+let dataSha = null;
 
 async function refreshSha() {
   const token = getToken();
@@ -1071,8 +1036,68 @@ async function refreshSha() {
     const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}`, {
       headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
     });
-    if (res.ok) { const info = await res.json(); dataSha = info.sha; }
-  } catch(e) {}
+    if (res.ok) {
+      const info = await res.json();
+      dataSha = info.sha;
+    } else if (res.status === 404) {
+      dataSha = null; // 파일 없음 — 새로 생성
+    }
+  } catch(e) {
+    console.error('SHA 조회 실패:', e);
+  }
+}
+
+/* ── GitHub data.json 저장 (재시도 최대 2회) ── */
+let ghSaveTimer = null;
+
+async function saveToGitHub(retryCount = 0) {
+  const token = getToken();
+  if (!token) return;
+  const st = document.getElementById('saveStatus');
+  try {
+    // SHA 없으면 먼저 확인
+    if (dataSha === null) await refreshSha();
+
+    const data = collectData();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}`;
+    const body = { message: '업무 자동저장', content };
+    if (dataSha) body.sha = dataSha;
+
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const result = await res.json();
+
+    if (result.content && result.content.sha) {
+      dataSha = result.content.sha;
+      if (st) {
+        st.textContent = '☁️ 저장됨';
+        st.style.color = '#10b981';
+        setTimeout(() => { st.textContent = '더블클릭으로 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 2000);
+      }
+    } else if (retryCount < 2) {
+      // SHA 충돌 등 — 1회만 재시도
+      dataSha = null;
+      await new Promise(r => setTimeout(r, 500));
+      await saveToGitHub(retryCount + 1);
+    } else {
+      throw new Error('저장 실패: ' + JSON.stringify(result));
+    }
+  } catch(e) {
+    console.error('GitHub 저장 실패:', e);
+    if (st) {
+      st.textContent = '⚠️ 저장 실패 (콘솔 확인)';
+      st.style.color = '#ef4444';
+      setTimeout(() => { st.textContent = '더블클릭으로 수정 | 배지 클릭으로 상태 변경'; st.style.color = ''; }, 3000);
+    }
+  }
 }
 
 function scheduleGitHubSave() {
@@ -1085,9 +1110,10 @@ async function loadFromGitHub() {
   const token = getToken();
   if (!token) { loadFromLocalStorage(); return; }
   try {
-    const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}?t=${Date.now()}`, {
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-    });
+    const res = await fetch(
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}?t=${Date.now()}`,
+      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
+    );
     if (!res.ok) { loadFromLocalStorage(); return; }
     const info = await res.json();
     dataSha = info.sha;
@@ -1100,7 +1126,7 @@ async function loadFromGitHub() {
   }
 }
 
-/* ── localStorage 백업 저장/불러오기 ── */
+/* ── localStorage 백업 ── */
 const SAVE_KEY = 'processTeamData_v2';
 function saveToLocalStorage() {
   localStorage.setItem(SAVE_KEY, JSON.stringify(collectData()));
@@ -1114,12 +1140,10 @@ function loadFromLocalStorage() {
 /* ── 데이터로 화면 렌더링 ── */
 function renderData(data) {
   if (!data || !data.cards) return;
-  // 헤더 메타 복원
   if (data.meta) {
     const metaEls = document.querySelectorAll('.meta-editable');
     data.meta.forEach((txt, i) => { if (metaEls[i]) metaEls[i].textContent = txt; });
   }
-  // 섹션 초기화
   ['project','analysis','permit','etc'].forEach(cat => {
     const sg = document.getElementById('sg-' + cat);
     if (sg) sg.innerHTML = '';
@@ -1192,35 +1216,42 @@ function autoSave() {
   scheduleGitHubSave();
 }
 
-/* ── 토큰 설정 모달 ── */
+/* ── 토큰 설정 ── */
 function openTokenModal() { document.getElementById('tokenModal').classList.add('open'); }
 function closeTokenModal() { document.getElementById('tokenModal').classList.remove('open'); }
 function saveToken() {
   const t = document.getElementById('tokenInput').value.trim();
   if (!t) return alert('토큰을 입력해주세요');
   localStorage.setItem(GH_TOKEN_KEY, t);
+  dataSha = null; // 토큰 바뀌면 SHA 초기화
   closeTokenModal();
   updateTokenBtn(true);
-  loadFromGitHub(); // 토큰 저장 후 바로 GitHub에서 불러오기
+  loadFromGitHub();
 }
 function updateTokenBtn(connected) {
   const btn = document.getElementById('tokenBtn');
   if (!btn) return;
-  if (connected) { btn.textContent = '☁️ GitHub 연결됨'; btn.style.background = '#ecfdf5'; btn.style.color = '#166534'; btn.style.border = '1px solid #bbf7d0'; }
-  else { btn.textContent = '🔑 GitHub 연결'; btn.style.background = ''; btn.style.color = ''; btn.style.border = ''; }
+  if (connected) {
+    btn.textContent = '☁️ GitHub 연결됨';
+    btn.style.background = '#ecfdf5';
+    btn.style.color = '#166534';
+    btn.style.border = '1px solid #bbf7d0';
+  } else {
+    btn.textContent = '🔑 GitHub 연결';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.border = '';
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   loadColors();
-
-  // 토큰 있으면 GitHub에서 불러오기, 없으면 localStorage
   if (getToken()) {
     updateTokenBtn(true);
     loadFromGitHub();
   } else {
     loadFromLocalStorage();
   }
-
   document.addEventListener('blur', e => {
     if (e.target.classList && e.target.classList.contains('editable')) {
       e.target.removeAttribute('contenteditable');

@@ -522,6 +522,46 @@ body {
   </div>
 </div>
 
+<!-- 색상 설정 모달 -->
+<div class="modal-overlay" id="colorModal">
+  <div class="modal">
+    <h3>🎨 카테고리 색상 설정</h3>
+    <p style="font-size:12px;color:#9ca3af;margin-bottom:16px;">카테고리별 헤더 색상을 변경할 수 있어요</p>
+    <div class="form-group">
+      <label>🧫 과제</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input type="color" id="color-project" value="#1e3a5f" style="width:48px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+        <span id="colorpreview-project" style="flex:1;height:36px;border-radius:8px;background:#1e3a5f;"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>🔬 분석</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input type="color" id="color-analysis" value="#134e4a" style="width:48px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+        <span id="colorpreview-analysis" style="flex:1;height:36px;border-radius:8px;background:#134e4a;"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>📑 인허가</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input type="color" id="color-permit" value="#4a1d1d" style="width:48px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+        <span id="colorpreview-permit" style="flex:1;height:36px;border-radius:8px;background:#4a1d1d;"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>📦 기타</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input type="color" id="color-etc" value="#3b2a0f" style="width:48px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+        <span id="colorpreview-etc" style="flex:1;height:36px;border-radius:8px;background:#3b2a0f;"></span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeColorModal()">닫기</button>
+      <button class="btn btn-primary" onclick="applyColors()">적용</button>
+    </div>
+  </div>
+</div>
+
 <!-- GitHub 토큰 모달 -->
 <div class="modal-overlay" id="tokenModal">
   <div class="modal">
@@ -820,6 +860,43 @@ function renderActionItems() {
   }).join('');
 }
 
+
+const COLOR_KEY = 'processTeamColors_v1';
+const defaultColors = { project: '#1e3a5f', analysis: '#134e4a', permit: '#4a1d1d', etc: '#3b2a0f' };
+let catColors = { ...defaultColors };
+
+function loadColors() {
+  const saved = localStorage.getItem(COLOR_KEY);
+  if (saved) { try { catColors = { ...defaultColors, ...JSON.parse(saved) }; } catch(e) {} }
+  applyColorsToDom();
+}
+function applyColorsToDom() {
+  Object.entries(catColors).forEach(([cat, color]) => {
+    document.querySelectorAll(`.work-card-header.cat-${cat}`).forEach(el => {
+      el.style.background = color;
+    });
+  });
+}
+function openColorModal() {
+  ['project','analysis','permit','etc'].forEach(cat => {
+    const inp = document.getElementById('color-' + cat);
+    const prev = document.getElementById('colorpreview-' + cat);
+    if (inp) inp.value = catColors[cat] || defaultColors[cat];
+    if (prev) prev.style.background = catColors[cat] || defaultColors[cat];
+    if (inp) inp.oninput = () => { if (prev) prev.style.background = inp.value; };
+  });
+  document.getElementById('colorModal').classList.add('open');
+}
+function closeColorModal() { document.getElementById('colorModal').classList.remove('open'); }
+function applyColors() {
+  ['project','analysis','permit','etc'].forEach(cat => {
+    const inp = document.getElementById('color-' + cat);
+    if (inp) catColors[cat] = inp.value;
+  });
+  localStorage.setItem(COLOR_KEY, JSON.stringify(catColors));
+  applyColorsToDom();
+  closeColorModal();
+}
 
 /* ── GitHub 자동저장 ── */
 const GH_TOKEN_KEY = 'gh_token_v1';

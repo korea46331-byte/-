@@ -182,7 +182,10 @@ body {
 .td-num { width: 20px; color: #cbd5e1; font-size: 11px; text-align: center; }
 .td-task { width: 180px; max-width: 180px; word-break: break-word; white-space: normal; font-size: 11px; }
 .td-status { width: 60px; }
-.td-deadline { width: 100px; }
+.td-deadline { width: 120px; }
+.date-pair { display: flex; flex-direction: column; gap: 3px; }
+.date-pair div { display: flex; align-items: center; gap: 4px; }
+.date-lbl { font-size: 9px; color: #9ca3af; width: 22px; flex-shrink: 0; }
 .td-owner { width: 54px; font-size: 11px; }
 .td-memo { min-width: 160px; color: #6b7280; font-size: 11px; word-break: break-word; white-space: normal; }
 .td-action { width: 70px; }
@@ -334,7 +337,7 @@ body {
     display: inline-block; margin-right: 6px; margin-bottom: 6px; vertical-align: middle;
   }
   .sub-table tr[data-rid] .td-deadline {
-    display: inline-block; margin-bottom: 6px; vertical-align: middle;
+    display: block; margin-bottom: 6px;
   }
   .sub-table tr[data-rid] .td-owner {
     display: block; width: auto; margin-top: 2px; margin-bottom: 2px;
@@ -875,11 +878,12 @@ function addSubRow(btn) {
   const tbody  = addRow.closest('tbody');
   const task   = addRow.querySelector('.new-sub-task').value.trim();
   if (!task) return alert('세부내용을 입력해주세요');
-  const status = addRow.querySelector('.new-sub-status').value;
-  const date   = addRow.querySelector('.new-sub-date').value;
-  const owner  = addRow.querySelector('.new-sub-owner').value || '-';
-  const memo   = addRow.querySelector('.new-sub-memo').value || '-';
-  const rid    = 'r' + ridCounter++;
+  const status    = addRow.querySelector('.new-sub-status').value;
+  const startDate = addRow.querySelector('.new-sub-startdate').value;
+  const date      = addRow.querySelector('.new-sub-date').value;
+  const owner     = addRow.querySelector('.new-sub-owner').value || '-';
+  const memo      = addRow.querySelector('.new-sub-memo').value || '-';
+  const rid       = 'r' + ridCounter++;
   const dataRows = tbody.querySelectorAll('tr[data-rid]');
   const num = dataRows.length + 1;
 
@@ -888,7 +892,10 @@ function addSubRow(btn) {
   tr.innerHTML = `<td class="td-num">${num}</td>
     <td class="td-task editable" contenteditable="false">${textToHtml(task)}</td>
     <td class="td-status"><span class="badge ${status}" onclick="cycleBadge(this)">${badgeLabels[status]}</span></td>
-    <td class="td-deadline"><input type="date" class="date-input" value="${date}" onchange="autoSave()"></td>
+    <td class="td-deadline"><div class="date-pair">
+      <div><span class="date-lbl">시작</span><input type="date" class="date-input start-date-input" value="${startDate}" onchange="autoSave()"></div>
+      <div><span class="date-lbl">종료</span><input type="date" class="date-input end-date-input" value="${date}" onchange="autoSave()"></div>
+    </div></td>
     <td class="td-owner editable" contenteditable="false">${owner}</td>
     <td class="td-memo editable" contenteditable="false">${textToHtml(memo)}</td>
     <td class="td-action"><div class="row-actions">
@@ -897,6 +904,7 @@ function addSubRow(btn) {
     </div></td>`;
   tbody.insertBefore(tr, addRow);
   addRow.querySelector('.new-sub-task').value = '';
+  addRow.querySelector('.new-sub-startdate').value = '';
   addRow.querySelector('.new-sub-date').value = '';
   addRow.querySelector('.new-sub-owner').value = '';
   addRow.querySelector('.new-sub-memo').value = '';
@@ -1075,15 +1083,17 @@ function collectData() {
     const rows = [];
     card.querySelectorAll('tr[data-rid]').forEach(row => {
       const badge   = row.querySelector('.badge');
-      const dateInp = row.querySelector('.date-input');
-      const taskEl  = row.querySelector('.td-task');
-      const ownerEl = row.querySelector('.td-owner');
-      const memoEl  = row.querySelector('.td-memo');
+      const startInp = row.querySelector('.start-date-input');
+      const dateInp  = row.querySelector('.end-date-input');
+      const taskEl   = row.querySelector('.td-task');
+      const ownerEl  = row.querySelector('.td-owner');
+      const memoEl   = row.querySelector('.td-memo');
       rows.push({
         rid:       row.dataset.rid,
-        task:      taskEl   ? htmlToText(taskEl)          : '',
-        status:    badge    ? (badgeCycleArr.find(c => badge.classList.contains(c)) || 'badge-ing') : 'badge-ing',
-        date:      dateInp  ? dateInp.value              : '',
+        task:      taskEl    ? htmlToText(taskEl)          : '',
+        status:    badge     ? (badgeCycleArr.find(c => badge.classList.contains(c)) || 'badge-ing') : 'badge-ing',
+        startDate: startInp  ? startInp.value              : '',
+        date:      dateInp   ? dateInp.value               : '',
         owner:     ownerEl  ? ownerEl.textContent.trim() : '-',
         memo:      memoEl   ? htmlToText(memoEl)          : '-',
         completed: row.classList.contains('row-completed')
@@ -1265,7 +1275,10 @@ function renderData(data) {
         <td class="td-num">${i+1}</td>
         <td class="td-task editable">${textToHtml(r.task)}</td>
         <td class="td-status"><span class="badge ${r.status}" onclick="cycleBadge(this)">${bl}</span></td>
-        <td class="td-deadline"><input type="date" class="date-input" value="${r.date}" onchange="autoSave()"></td>
+        <td class="td-deadline"><div class="date-pair">
+          <div><span class="date-lbl">시작</span><input type="date" class="date-input start-date-input" value="${r.startDate||''}" onchange="autoSave()"></div>
+          <div><span class="date-lbl">종료</span><input type="date" class="date-input end-date-input" value="${r.date||''}" onchange="autoSave()"></div>
+        </div></td>
         <td class="td-owner editable">${r.owner}</td>
         <td class="td-memo editable">${textToHtml(r.memo)}</td>
         <td class="td-action"><div class="row-actions">
@@ -1283,7 +1296,10 @@ function renderData(data) {
         <option value="badge-ing">진행중</option><option value="badge-plan">예정</option>
         <option value="badge-wait">검토중</option><option value="badge-urgent">주의요망</option>
       </select></td>
-      <td><input type="date" class="new-sub-date date-input"></td>
+      <td><div class="date-pair">
+        <div><span class="date-lbl">시작</span><input type="date" class="new-sub-startdate date-input"></div>
+        <div><span class="date-lbl">종료</span><input type="date" class="new-sub-date date-input"></div>
+      </div></td>
       <td><input placeholder="담당자" class="new-sub-owner"></td>
       <td><input placeholder="메모" class="new-sub-memo"></td>
       <td><button class="btn-add-sub" onclick="addSubRow(this)">+ 추가</button></td>`;

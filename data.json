@@ -105,15 +105,6 @@
           "owner": "황태희",
           "memo": "-30종 추출 및 분주",
           "completed": false
-        },
-        {
-          "rid": "r100",
-          "task": "ㅇ",
-          "status": "badge-ing",
-          "date": "",
-          "owner": "-",
-          "memo": "ㅇ",
-          "completed": false
         }
       ]
     },

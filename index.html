@@ -812,6 +812,19 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ── 줄바꿈 보존 헬퍼 ── */
+function htmlToText(el) {
+  return el.innerHTML
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<div>/gi, '\n').replace(/<\/div>/gi, '')
+    .replace(/&nbsp;/g, ' ').replace(/<[^>]+>/g, '').trim();
+}
+function textToHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+}
+
 /* ── BADGE ── */
 function cycleBadge(el) {
   const cur  = badgeCycleArr.find(c => el.classList.contains(c)) || 'badge-ing';
@@ -872,13 +885,12 @@ function addSubRow(btn) {
   const tr = document.createElement('tr');
   tr.dataset.rid = rid;
   tr.innerHTML = `<td class="td-num">${num}</td>
-    <td class="td-task editable" contenteditable="false">${task}</td>
+    <td class="td-task editable" contenteditable="false">${textToHtml(task)}</td>
     <td class="td-status"><span class="badge ${status}" onclick="cycleBadge(this)">${badgeLabels[status]}</span></td>
     <td class="td-deadline"><input type="date" class="date-input" value="${date}" onchange="autoSave()"></td>
     <td class="td-owner editable" contenteditable="false">${owner}</td>
-    <td class="td-memo editable" contenteditable="false">${memo}</td>
+    <td class="td-memo editable" contenteditable="false">${textToHtml(memo)}</td>
     <td class="td-action"><div class="row-actions">
-      <button class="btn-re" onclick="openEditRow(this)" style="display:inline-block">수정</button>
       <button class="btn-ok" onclick="completeRow(this)" style="display:inline-block">✓완료</button>
       <button class="btn-del" onclick="deleteRow(this)" style="display:inline-block">삭제</button>
     </div></td>`;
@@ -1068,11 +1080,11 @@ function collectData() {
       const memoEl  = row.querySelector('.td-memo');
       rows.push({
         rid:       row.dataset.rid,
-        task:      taskEl   ? taskEl.textContent.trim()  : '',
+        task:      taskEl   ? htmlToText(taskEl)          : '',
         status:    badge    ? (badgeCycleArr.find(c => badge.classList.contains(c)) || 'badge-ing') : 'badge-ing',
         date:      dateInp  ? dateInp.value              : '',
         owner:     ownerEl  ? ownerEl.textContent.trim() : '-',
-        memo:      memoEl   ? memoEl.textContent.trim()  : '-',
+        memo:      memoEl   ? htmlToText(memoEl)          : '-',
         completed: row.classList.contains('row-completed')
       });
     });

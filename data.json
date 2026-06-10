@@ -123,6 +123,16 @@
           "owner": "한철호",
           "memo": "PT 생산량 증대 실험 (N, P함량 조절)",
           "completed": false
+        },
+        {
+          "rid": "r101",
+          "task": "TL2L실험",
+          "status": "badge-ing",
+          "startDate": "",
+          "date": "",
+          "owner": "한철호",
+          "memo": "미정",
+          "completed": false
         }
       ]
     },

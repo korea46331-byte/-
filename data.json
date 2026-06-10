@@ -279,6 +279,16 @@
           "owner": "-",
           "memo": "500g+600~700g(예상), = 1~1.2kg\n11일 wet 6kg wash -> 12일 동걸견조",
           "completed": false
+        },
+        {
+          "rid": "r101",
+          "task": "간건강 IP 저장안정성 재분석",
+          "status": "badge-ing",
+          "startDate": "2026-06-10",
+          "date": "2026-06-30",
+          "owner": "-",
+          "memo": "시료 수령 from 종근당바이오",
+          "completed": false
         }
       ]
     },

@@ -823,6 +823,7 @@ const headerColors  = ['color-blue','color-green','color-purple','color-teal','c
 
 /* ── 주간보고 ── */
 const catLabels = { project:'과제', analysis:'분석', permit:'인허가', etc:'기타' };
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function openWeeklyReport() {
   const today = new Date();
@@ -843,11 +844,11 @@ function openWeeklyReport() {
       const task = row.querySelector('.td-task')?.textContent.trim() || '';
       const memo = row.querySelector('.td-memo') ? htmlToText(row.querySelector('.td-memo')) : '';
       const nextPlan = row.dataset.nextplan || '';
-      html += `<div class="wr-row" data-wid="${card.dataset.wid}" data-rid="${row.dataset.rid}" data-cat="${cat}" data-card="${cardName.replace(/"/g,'&quot;')}" data-task="${task.replace(/"/g,'&quot;')}"
+      html += `<div class="wr-row" data-wid="${card.dataset.wid}" data-rid="${row.dataset.rid}" data-cat="${cat}" data-card="${escHtml(cardName)}" data-task="${escHtml(task)}"
         style="display:grid;grid-template-columns:1fr 1.2fr 1.2fr;gap:8px;margin-bottom:6px;align-items:start;">
-        <div style="font-size:12px;color:#374151;padding-top:6px;">${task}</div>
-        <textarea class="wr-this" rows="2" placeholder="금주 실적" style="font-size:12px;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;resize:vertical;width:100%;box-sizing:border-box;">${memo==='-'?'':memo}</textarea>
-        <textarea class="wr-next" rows="2" placeholder="차주 계획" style="font-size:12px;padding:6px 8px;border:1px solid #dbeafe;border-radius:6px;resize:vertical;width:100%;box-sizing:border-box;background:#f8fbff;">${nextPlan}</textarea>
+        <div style="font-size:12px;color:#374151;padding-top:6px;">${escHtml(task)}</div>
+        <textarea class="wr-this" rows="2" placeholder="금주 실적" style="font-size:12px;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;resize:vertical;width:100%;box-sizing:border-box;">${escHtml(memo==='-'?'':memo)}</textarea>
+        <textarea class="wr-next" rows="2" placeholder="차주 계획" style="font-size:12px;padding:6px 8px;border:1px solid #dbeafe;border-radius:6px;resize:vertical;width:100%;box-sizing:border-box;background:#f8fbff;">${escHtml(nextPlan)}</textarea>
       </div>`;
     });
     html += '</div>';
@@ -922,6 +923,12 @@ function weeklyCopy() {
     if (r.nextWeek) txt += `    차주: ${r.nextWeek.replace(/\n/g,'\n          ')}\n`;
   });
   navigator.clipboard.writeText(txt.trim()).then(() => {
+    alert('복사 완료! 붙여넣기 하세요.');
+    finishReport();
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = txt.trim(); document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove();
     alert('복사 완료! 붙여넣기 하세요.');
     finishReport();
   });
@@ -1564,6 +1571,15 @@ function renderData(data) {
   ['project','analysis','permit','etc'].forEach(cat => {
     const sg = document.getElementById('sg-' + cat);
     if (sg) sg.innerHTML = '';
+  });
+  // ID 카운터 복원 (새 카드/행이 기존 ID를 재사용하지 않도록)
+  data.cards.forEach(cd => {
+    const wn = parseInt(String(cd.wid).replace(/\D/g,''), 10);
+    if (!isNaN(wn) && wn >= widCounter) widCounter = wn + 1;
+    (cd.rows||[]).forEach(r => {
+      const rn = parseInt(String(r.rid).replace(/\D/g,''), 10);
+      if (!isNaN(rn) && rn >= ridCounter) ridCounter = rn + 1;
+    });
   });
   data.cards.forEach(cd => {
     const sg = document.getElementById('sg-' + cd.cat);

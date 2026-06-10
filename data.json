@@ -132,7 +132,18 @@
       "name": "GAL 하이브리드 배양",
       "status": "badge-ing",
       "colorCls": "color-amber",
-      "rows": []
+      "rows": [
+        {
+          "rid": "r100",
+          "task": "GAL seed 유지 (광배양)",
+          "status": "badge-ing",
+          "startDate": "",
+          "date": "",
+          "owner": "한철호",
+          "memo": "seed 유지",
+          "completed": false
+        }
+      ]
     },
     {
       "wid": "w4",

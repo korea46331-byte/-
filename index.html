@@ -1175,9 +1175,10 @@ function applyColors() {
 
 /* ── GitHub 설정 ── */
 const GH_TOKEN_KEY = 'gh_token_v1';
-const GH_OWNER = 'korea46331-byte';
-const GH_REPO  = 'schedule';
-const GH_DATA  = 'data.json';
+const GH_OWNER  = 'korea46331-byte';
+const GH_REPO   = 'schedule';
+const GH_DATA   = 'data.json';
+const GH_BRANCH = 'data';
 
 function getToken() { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
 
@@ -1232,7 +1233,7 @@ async function refreshSha() {
   const token = getToken();
   if (!token) return;
   try {
-    const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}`, {
+    const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}?ref=${GH_BRANCH}`, {
       headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
     });
     if (res.ok) {
@@ -1260,7 +1261,7 @@ async function saveToGitHub(retryCount = 0) {
     const data = collectData();
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
     const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}`;
-    const body = { message: '업무 자동저장', content };
+    const body = { message: '업무 자동저장', content, branch: GH_BRANCH };
     if (dataSha) body.sha = dataSha;
 
     const res = await fetch(url, {
@@ -1303,7 +1304,7 @@ async function loadFromGitHub() {
   if (!token) { loadFromLocalStorage(); return; }
   try {
     const res = await fetch(
-      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}?t=${Date.now()}`,
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}?ref=${GH_BRANCH}&t=${Date.now()}`,
       { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
     );
     if (!res.ok) { loadFromLocalStorage(); return; }

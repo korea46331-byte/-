@@ -1456,6 +1456,7 @@ function updateTokenBtn(connected) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('viewToggle').style.display = 'flex';
   loadColors();
   if (getToken()) {
     updateTokenBtn(true);

@@ -127,6 +127,14 @@
       ]
     },
     {
+      "wid": "w20",
+      "cat": "project",
+      "name": "GAL 하이브리드 배양",
+      "status": "badge-ing",
+      "colorCls": "color-amber",
+      "rows": []
+    },
+    {
       "wid": "w4",
       "cat": "analysis",
       "name": "Gac oil 분석",

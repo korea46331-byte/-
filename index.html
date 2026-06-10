@@ -417,6 +417,9 @@ body {
 
   /* 메모장 */
   #memo-area { height: calc(100vh - 220px); font-size: 13px; padding: 10px; }
+
+  /* 주간보고 모달 */
+  .wr-row { grid-template-columns: 1fr !important; }
 }
 </style>
 </head>
@@ -465,6 +468,7 @@ body {
   <select id="ownerFilter" onchange="applyOwnerFilter()" style="padding:6px 10px;border-radius:8px;border:1px solid #e2e8f0;font-size:12px;color:#475569;background:#f8fafc;cursor:pointer;">
     <option value="">👤 전체 담당자</option>
   </select>
+  <button class="btn" style="background:#1e3a5f;color:#fff" onclick="openWeeklyReport()">📄 주간보고</button>
   <span class="save-status" id="saveStatus">—</span>
   <div class="view-toggle" id="viewToggle" style="display:none;">
     <button class="active" onclick="setView('list',this)">📋 목록</button>
@@ -686,6 +690,23 @@ body {
   <textarea id="memo-area" placeholder="자유롭게 메모하세요..." oninput="autoSave()"></textarea>
 </div>
 
+<!-- 주간보고 모달 -->
+<div class="modal-overlay" id="weeklyModal">
+  <div class="modal" style="max-width:860px;width:95%;max-height:88vh;overflow-y:auto;">
+    <h3>📄 주간보고 <span id="wr-period" style="font-size:12px;font-weight:400;color:#9ca3af;"></span></h3>
+    <div id="wr-diff" style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:12px;line-height:1.7;margin-bottom:14px;color:#374151;">변경사항 분석 중...</div>
+    <div id="wr-rows"></div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#475569;margin:12px 0;">
+      <input type="checkbox" id="wr-move" checked> 생성 후 차주계획을 메모(금주실적)로 이동
+    </label>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWeeklyReport()">닫기</button>
+      <button class="btn" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0" onclick="weeklyCopy()">📋 텍스트 복사</button>
+      <button class="btn btn-primary" onclick="weeklyExcel()">📥 엑셀 다운로드</button>
+    </div>
+  </div>
+</div>
+
 <!-- 색상 설정 모달 -->
 <div class="modal-overlay" id="colorModal">
   <div class="modal">
@@ -799,6 +820,143 @@ let widCounter = 20;
 const badgeCycleArr = ['badge-ing','badge-wait','badge-plan','badge-urgent','badge-done','badge-hold'];
 const badgeLabels   = {'badge-ing':'진행중','badge-wait':'검토중','badge-plan':'예정/협의중','badge-urgent':'주의요망','badge-done':'완료','badge-hold':'보류'};
 const headerColors  = ['color-blue','color-green','color-purple','color-teal','color-amber'];
+
+/* ── 주간보고 ── */
+const catLabels = { project:'과제', analysis:'분석', permit:'인허가', etc:'기타' };
+
+function openWeeklyReport() {
+  const today = new Date();
+  const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
+  const f = d => `${d.getMonth()+1}/${d.getDate()}`;
+  document.getElementById('wr-period').textContent = `(${f(weekAgo)} ~ ${f(today)})`;
+
+  // 카드별 행 목록 (완료된 행 제외)
+  let html = '';
+  document.querySelectorAll('#tab-all .work-card').forEach(card => {
+    const rows = [...card.querySelectorAll('tr[data-rid]')].filter(r => !r.classList.contains('row-completed'));
+    if (!rows.length) return;
+    const cardName = card.querySelector('.work-card-name')?.textContent.trim() || '';
+    const cat = catLabels[card.dataset.cat] || '기타';
+    html += `<div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:#1e3a5f;margin-bottom:6px;">[${cat}] ${cardName}</div>`;
+    rows.forEach(row => {
+      const task = row.querySelector('.td-task')?.textContent.trim() || '';
+      const memo = row.querySelector('.td-memo') ? htmlToText(row.querySelector('.td-memo')) : '';
+      const nextPlan = row.dataset.nextplan || '';
+      html += `<div class="wr-row" data-wid="${card.dataset.wid}" data-rid="${row.dataset.rid}" data-cat="${cat}" data-card="${cardName.replace(/"/g,'&quot;')}" data-task="${task.replace(/"/g,'&quot;')}"
+        style="display:grid;grid-template-columns:1fr 1.2fr 1.2fr;gap:8px;margin-bottom:6px;align-items:start;">
+        <div style="font-size:12px;color:#374151;padding-top:6px;">${task}</div>
+        <textarea class="wr-this" rows="2" placeholder="금주 실적" style="font-size:12px;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;resize:vertical;width:100%;box-sizing:border-box;">${memo==='-'?'':memo}</textarea>
+        <textarea class="wr-next" rows="2" placeholder="차주 계획" style="font-size:12px;padding:6px 8px;border:1px solid #dbeafe;border-radius:6px;resize:vertical;width:100%;box-sizing:border-box;background:#f8fbff;">${nextPlan}</textarea>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('wr-rows').innerHTML = html ||
+    '<div style="color:#9ca3af;font-size:13px;">업무가 없어요.</div>';
+  document.getElementById('weeklyModal').classList.add('open');
+  loadWeeklyDiff();
+}
+function closeWeeklyReport() { document.getElementById('weeklyModal').classList.remove('open'); }
+
+/* 최근 7일 변경사항 자동 추출 (data 브랜치 커밋 비교) */
+async function loadWeeklyDiff() {
+  const box = document.getElementById('wr-diff');
+  const token = getToken();
+  if (!token) { box.innerHTML = 'ℹ️ GitHub 연결 시 최근 7일 변경사항이 자동으로 표시됩니다.'; return; }
+  try {
+    const until = new Date(); until.setDate(until.getDate() - 7);
+    const res = await fetch(
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/commits?path=${GH_DATA}&sha=${GH_BRANCH}&until=${until.toISOString()}&per_page=1`,
+      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+    const commits = await res.json();
+    if (!Array.isArray(commits) || !commits.length) {
+      box.innerHTML = 'ℹ️ 일주일 전 데이터가 아직 없어요. 다음 주부터 변경사항이 자동 표시됩니다.'; return;
+    }
+    const fileRes = await fetch(
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA}?ref=${commits[0].sha}`,
+      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+    const info = await fileRes.json();
+    const oldData = JSON.parse(decodeURIComponent(escape(atob(info.content.replace(/\n/g,'')))));
+    box.innerHTML = buildDiffHtml(oldData, collectData());
+  } catch(e) {
+    box.innerHTML = '⚠️ 변경사항을 불러오지 못했어요.';
+  }
+}
+function buildDiffHtml(oldData, newData) {
+  const key = (w, r) => `${w}|${r.rid}|${r.task}`;
+  const oldMap = new Map();
+  (oldData.cards||[]).forEach(c => (c.rows||[]).forEach(r => oldMap.set(key(c.wid,r), r)));
+  const lines = [];
+  (newData.cards||[]).forEach(c => (c.rows||[]).forEach(r => {
+    const o = oldMap.get(key(c.wid,r));
+    const name = `<b>${r.task}</b> <span style="color:#9ca3af;">(${c.name})</span>`;
+    if (!o) { lines.push(`🆕 신규: ${name}`); return; }
+    if (!o.completed && r.completed) lines.push(`✅ 완료: ${name}`);
+    else if (o.status !== r.status) lines.push(`🔄 상태 변경: ${name} ${badgeLabels[o.status]||''} → ${badgeLabels[r.status]||''}`);
+    if (o.memo !== r.memo && r.memo && r.memo !== '-') lines.push(`📝 메모 갱신: ${name}`);
+  }));
+  const newKeys = new Set();
+  (newData.cards||[]).forEach(c => (c.rows||[]).forEach(r => newKeys.add(key(c.wid,r))));
+  oldMap.forEach((r, k) => { if (!newKeys.has(k)) lines.push(`🗑️ 삭제: <b>${r.task}</b>`); });
+  return lines.length
+    ? '<b>📌 최근 7일 변경사항</b><br>' + lines.join('<br>')
+    : '최근 7일간 변경사항이 없어요.';
+}
+
+/* 보고서 데이터 수집 */
+function collectReport() {
+  return [...document.querySelectorAll('.wr-row')].map(el => ({
+    cat: el.dataset.cat, card: el.dataset.card, task: el.dataset.task,
+    thisWeek: el.querySelector('.wr-this').value.trim(),
+    nextWeek: el.querySelector('.wr-next').value.trim()
+  }));
+}
+function weeklyCopy() {
+  const rows = collectReport();
+  let txt = '', lastCard = '';
+  rows.forEach(r => {
+    if (r.card !== lastCard) { txt += `\n[${r.cat}] ${r.card}\n`; lastCard = r.card; }
+    txt += `  - ${r.task}\n`;
+    if (r.thisWeek) txt += `    금주: ${r.thisWeek.replace(/\n/g,'\n          ')}\n`;
+    if (r.nextWeek) txt += `    차주: ${r.nextWeek.replace(/\n/g,'\n          ')}\n`;
+  });
+  navigator.clipboard.writeText(txt.trim()).then(() => {
+    alert('복사 완료! 붙여넣기 하세요.');
+    finishReport();
+  });
+}
+function weeklyExcel() {
+  const rows = collectReport();
+  const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+  let csv = '﻿구분,업무,세부내용,금주 실적,차주 계획\n';
+  rows.forEach(r => { csv += [r.cat, r.card, r.task, r.thisWeek, r.nextWeek].map(esc).join(',') + '\n'; });
+  const d = new Date();
+  const name = `${String(d.getFullYear()).slice(2)}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_주간보고.csv`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+  finishReport();
+}
+/* 차주계획 → 메모(금주실적) 이동 */
+function finishReport() {
+  const move = document.getElementById('wr-move').checked;
+  document.querySelectorAll('.wr-row').forEach(el => {
+    const next = el.querySelector('.wr-next').value.trim();
+    const row = [...document.querySelectorAll(`#tab-all .work-card[data-wid="${el.dataset.wid}"] tr[data-rid="${el.dataset.rid}"]`)]
+      .find(r => r.querySelector('.td-task')?.textContent.trim() === el.dataset.task);
+    if (!row) return;
+    if (move && next) {
+      const memoEl = row.querySelector('.td-memo');
+      if (memoEl) memoEl.innerHTML = textToHtml(next);
+      delete row.dataset.nextplan;
+    } else {
+      if (next) row.dataset.nextplan = next; else delete row.dataset.nextplan;
+    }
+  });
+  autoSave();
+  closeWeeklyReport();
+}
 
 /* ── 담당자 필터 ── */
 function refreshOwnerFilter() {
@@ -1256,6 +1414,7 @@ function collectData() {
         date:      dateInp   ? dateInp.value               : '',
         owner:     ownerEl  ? ownerEl.textContent.trim() : '-',
         memo:      memoEl   ? htmlToText(memoEl)          : '-',
+        nextPlan:  row.dataset.nextplan || '',
         completed: row.classList.contains('row-completed')
       });
     });
@@ -1433,6 +1592,7 @@ function renderData(data) {
     cd.rows.forEach((r, i) => {
       const tr = document.createElement('tr');
       tr.dataset.rid = r.rid;
+      if (r.nextPlan) tr.dataset.nextplan = r.nextPlan;
       if (r.completed) tr.classList.add('row-completed');
       const bl = badgeLabels[r.status] || '진행중';
       tr.innerHTML = `

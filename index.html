@@ -441,6 +441,9 @@ body {
   <button class="btn btn-add edit-mode-show" onclick="openAddCardModal()">+ 업무 추가</button>
   <button class="btn" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0" onclick="openColorModal()">🎨 색상 설정</button>
   <button class="btn" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0" onclick="openTokenModal()" id="tokenBtn">🔑 GitHub 연결</button>
+  <select id="ownerFilter" onchange="applyOwnerFilter()" style="padding:6px 10px;border-radius:8px;border:1px solid #e2e8f0;font-size:12px;color:#475569;background:#f8fafc;cursor:pointer;">
+    <option value="">👤 전체 담당자</option>
+  </select>
   <span class="save-status" id="saveStatus">—</span>
   <div class="view-toggle" id="viewToggle" style="display:none;">
     <button class="active" onclick="setView('list',this)">📋 목록</button>
@@ -776,6 +779,36 @@ const badgeCycleArr = ['badge-ing','badge-wait','badge-plan','badge-urgent','bad
 const badgeLabels   = {'badge-ing':'진행중','badge-wait':'검토중','badge-plan':'예정/협의중','badge-urgent':'주의요망','badge-done':'완료','badge-hold':'보류'};
 const headerColors  = ['color-blue','color-green','color-purple','color-teal','color-amber'];
 
+/* ── 담당자 필터 ── */
+function refreshOwnerFilter() {
+  const sel = document.getElementById('ownerFilter');
+  const current = sel.value;
+  const owners = new Set();
+  document.querySelectorAll('#tab-all tr[data-rid] .td-owner').forEach(el => {
+    const name = el.textContent.trim();
+    if (name && name !== '-') name.split(/[,·\s]+/).forEach(n => { if (n) owners.add(n.trim()); });
+  });
+  sel.innerHTML = '<option value="">👤 전체 담당자</option>';
+  [...owners].sort().forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o; opt.textContent = o;
+    if (o === current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+function applyOwnerFilter() {
+  const val = document.getElementById('ownerFilter').value;
+  document.querySelectorAll('#tab-all tr[data-rid]').forEach(row => {
+    if (!val) { row.style.display = ''; return; }
+    const owner = row.querySelector('.td-owner')?.textContent.trim() || '';
+    row.style.display = owner.includes(val) ? '' : 'none';
+  });
+  document.querySelectorAll('#tab-all .work-card').forEach(card => {
+    if (!val) { card.style.display = ''; return; }
+    const visible = [...card.querySelectorAll('tr[data-rid]')].some(r => r.style.display !== 'none');
+    card.style.display = visible ? '' : 'none';
+  });
+}
 /* ── TAB ── */
 function showTab(tab, btn) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -1418,6 +1451,7 @@ function renderData(data) {
   });
   applyColorsToDom();
   renderActionItems();
+  refreshOwnerFilter();
 }
 
 /* ── 자동저장 ── */
